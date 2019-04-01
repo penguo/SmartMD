@@ -49,7 +49,7 @@
                 android:paddingEnd="16dp"
                 android:paddingBottom="16dp">
 
-                <TextView
+                <com.penguodev.smartmd.common.ui.MDTextView
                     android:id="@+id/editor_tv_start"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -63,14 +63,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#36CCCCCC"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
                     android:inputType="textMultiLine"
                     android:textColor="@color/black_212121"
                     android:textSize="18sp"
                     tools:text="Hello Input Area" />
 
-                <TextView
+                <com.penguodev.smartmd.common.ui.MDTextView
                     android:id="@+id/editor_tv_end"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

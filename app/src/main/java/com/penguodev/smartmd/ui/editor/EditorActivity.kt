@@ -30,7 +30,6 @@ class EditorActivity : AppCompatActivity() {
                 manager =
                     EditorManager(this@EditorActivity, binding.editorTvStart, binding.editorEt, binding.editorTvEnd)
             }.also { binding.viewModel = it }
-        binding.editorEt.requestFocus()
     }
 
 }

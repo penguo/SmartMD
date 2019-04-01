@@ -3,24 +3,20 @@ package com.penguodev.smartmd.ui.editor
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
-import android.graphics.Typeface
 import android.text.*
-import android.text.method.KeyListener
-import android.text.style.StyleSpan
 import android.util.Log
 import android.view.KeyEvent
-import android.view.View
 import android.widget.EditText
-import android.widget.TextView
 import com.penguodev.smartmd.common.ComfyUtil
-import com.penguodev.smartmd.common.fromHtml
 import com.penguodev.smartmd.common.setVisibleGone
+import com.penguodev.smartmd.common.ui.MDTextView
+
 
 class EditorManager(
     lifecycleOwner: LifecycleOwner,
-    private val startTV: TextView,
+    private val startTV: MDTextView,
     private val editText: EditText,
-    private val endTV: TextView
+    private val endTV: MDTextView
 ) {
     private val start = MutableLiveData<String>()
     private val end = MutableLiveData<String>()
@@ -47,6 +43,8 @@ class EditorManager(
                 endTV.text = ComfyUtil.fromHtml("<br/>" + mdManager.apply(text))
             }
         })
+        initTV(startTV)
+        initTV(endTV)
     }
 
     fun setEditableText(text: String) {
@@ -54,7 +52,6 @@ class EditorManager(
     }
 
     fun enter() {
-        Log.d("Check", "enter triggered")
         val texts = editText.text.toString().split("\n")
 
         texts.forEachIndexed { index, s ->
@@ -64,6 +61,11 @@ class EditorManager(
                 setEditableText(s)
             }
         }
+    }
+
+    fun getLineIndex(): Int {
+        // size - 1 + 1
+        return start.value?.split("\n\n")?.size ?: -1
     }
 
     private fun showPreLine(remove: Boolean) {
@@ -88,12 +90,99 @@ class EditorManager(
         start.value = afterLine.toString().let { if (it != "") it else null }
     }
 
+    private fun setLine(line: Int?) {
+        val currentLine = getLineIndex()
+        val newStart = StringBuilder()
+        val newEnd = StringBuilder()
+        when {
+            line == null -> {
+                return
+            }
+            line == currentLine -> {
+                return
+            }
+            line < currentLine -> {
+                var text: String? = null
+                start.value?.split("\n\n")?.forEachIndexed { index, s ->
+                    when {
+                        index < line -> {
+                            if (index != 0) {
+                                newStart.append("\n\n")
+                            }
+                            newStart.append(s)
+                        }
+                        index == line -> {
+                            text = s
+                        }
+                        index > line -> {
+                            if (index - line - 1 != 0) {
+                                newEnd.append("\n\n")
+                            }
+                            newEnd.append(s)
+                        }
+                    }
+                }
+                start.value = newStart.toString()
+                end.value = newEnd.toString() + "\n\n" + end.value
+                editText.setText(text)
+                Log.d("Check", "output: $line $currentLine $text")
+            }
+            line > currentLine -> {
+                var text: String? = null
+                end.value?.split("\n\n")?.forEachIndexed { index, s ->
+                    when {
+                        index + currentLine < line -> {
+                            if (index != 0) {
+                                newStart.append("\n\n")
+                            }
+                            newStart.append(s)
+                        }
+                        index + currentLine == line -> {
+                            text = s
+                        }
+                        index + currentLine > line -> {
+                            if (index - line - 1 != 0) {
+                                newEnd.append("\n\n")
+                            }
+                            newEnd.append(s)
+                        }
+                    }
+                }
+                start.value = start.value + "\n\n" + newStart.toString()
+                end.value = newEnd.toString()
+                editText.setText(text)
+                Log.d("Check", "output: $line $currentLine $text")
+            }
+            else -> return
+        }
+    }
+
     fun appendStart(text: String) {
         start.value = start.value?.let { "$it\n\n$text" } ?: text
     }
 
     fun appendEnd(text: String) {
         end.value = end.value?.let { "$text\n\n$it" } ?: text
+    }
+
+    fun initTV(view: MDTextView) {
+        view.setOnXYClickListener { _, touchX, touchY ->
+            if (touchX == null || touchY == null) return@setOnXYClickListener
+            val position = view.getPreciseOffset(touchX.toInt(), touchY.toInt())
+            setLine(findClickedLine(view.text, position))
+        }
+    }
+
+    private fun findClickedLine(text: CharSequence, position: Int): Int? {
+        var tempPosition = 0
+        text.split("\n\n").forEachIndexed { index, s ->
+            if (tempPosition <= position && position < tempPosition + s.length + 2) {
+                return index
+            } else {
+                tempPosition += s.length + 2
+            }
+        }
+        return null
     }
 }
 
