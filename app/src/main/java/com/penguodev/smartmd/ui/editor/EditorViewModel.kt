@@ -5,6 +5,8 @@ import android.arch.lifecycle.ViewModel
 
 class EditorViewModel : ViewModel() {
 
-    val editorManager = EditorManager()
-    val focusedLine = MutableLiveData<Int>()
+    lateinit var manager: EditorManager
+//    val focusedLine = MutableLiveData<Int>()
+
+    val text = MutableLiveData<String>()
 }
