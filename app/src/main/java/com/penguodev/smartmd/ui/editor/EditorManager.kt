@@ -190,18 +190,18 @@ class EditorManager(
         }
     }
 
-    fun getItemDocument(): ItemDocument {
-        val list = getList()
-        val header: String? = list.find { it.startsWith("# ") }
-        val text = StringBuilder().apply {
-            list.forEachIndexed { index, s ->
-                if (index != 0) {
-                    append("\n\n")
+        fun getItemDocument(): ItemDocument {
+            val list = getList()
+            val header: String? = list.find { it.startsWith("# ") }?.removePrefix("# ")
+            val text = StringBuilder().apply {
+                list.forEachIndexed { index, s ->
+                    if (index != 0) {
+                        append("\n\n")
+                    }
+                    append(s)
                 }
-                append(s)
-            }
-        }.toString()
-        // 이미 있는 문서 ?: 새로운 문서
+            }.toString()
+            // 이미 있는 문서 ?: 새로운 문서
         return prevDocument?.apply {
             this.header = header
             this.text = text

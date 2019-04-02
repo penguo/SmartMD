@@ -48,6 +48,7 @@ class EditorActivity : AppCompatActivity() {
                         }
                     }
             }.also { binding.viewModel = it }
+        EditorHelper(binding.recyclerViewBottom, binding.editorEt, binding.editorBtnOption)
     }
 
     inner class ClickHandler {

@@ -5,6 +5,7 @@ import android.os.Build
 import android.text.Html
 import android.text.Html.FROM_HTML_MODE_LEGACY
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 
 @BindingAdapter("fromHtml")
@@ -18,5 +19,14 @@ fun setVisibleGone(view: View, visibleGone: Boolean?) {
         View.VISIBLE
     } else {
         View.GONE
+    }
+}
+
+@BindingAdapter("srcResId")
+fun setSrcResId(view: ImageView, resId: Int?) {
+    if (resId == null) {
+        view.setImageDrawable(null)
+    } else {
+        view.setImageResource(resId)
     }
 }
