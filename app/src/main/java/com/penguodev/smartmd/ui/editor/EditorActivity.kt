@@ -6,11 +6,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.penguodev.smartmd.R
+import com.penguodev.smartmd.common.SoftKeyManager
 import com.penguodev.smartmd.databinding.ActivityEditorBinding
 import com.penguodev.smartmd.repository.MDDatabase
 import kotlinx.coroutines.*
+import timber.log.Timber
 
 class EditorActivity : AppCompatActivity() {
 
@@ -53,14 +56,32 @@ class EditorActivity : AppCompatActivity() {
 
     inner class ClickHandler {
         fun onClickSave(view: View) {
-            GlobalScope.launch(Dispatchers.Main) {
-                withContext(Dispatchers.Default) {
-                    MDDatabase.instance.documentDao.submit(viewModel.manager.getItemDocument())
-                }
-                finish()
-            }
+            saveAndFinish()
         }
     }
 
+    private fun saveAndFinish() {
+        GlobalScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Default) {
+                viewModel.manager.getItemDocument().let {
+                    MDDatabase.instance.documentDao.submit(it)
+                }
+            }
+            finish()
+        }
+    }
 
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("저장하시겠습니까?")
+            .setPositiveButton("저장") { dialog, which ->
+                saveAndFinish()
+            }
+            .setNegativeButton("취소") { dialog, which ->
+
+            }
+            .setNeutralButton("종료") { dialog, which ->
+                finish()
+            }
+    }
 }

@@ -3,6 +3,7 @@ package com.penguodev.smartmd.ui.editor
 import android.text.*
 import android.view.KeyEvent
 import android.widget.EditText
+import com.penguodev.smartmd.common.SoftKeyManager
 import com.penguodev.smartmd.common.fromHtml
 import com.penguodev.smartmd.common.setVisibleGone
 import com.penguodev.smartmd.common.ui.MDTextView
@@ -110,6 +111,7 @@ class EditorManager(
         fromHtml(rearTV, "<br/>${mdManager.apply(rearList)}")
         setVisibleGone(frontTV, frontList.isNotEmpty())
         setVisibleGone(rearTV, rearList.isNotEmpty())
+        SoftKeyManager.show(editText)
     }
 
     fun initTV() {

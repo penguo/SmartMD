@@ -12,8 +12,8 @@
     </data>
 
     <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="54dp"
+        android:layout_height="40dp"
         android:padding="8dp"
         app:srcResId="@{item.srcResId}"
         tools:src="@drawable/ic_add" />
