@@ -9,7 +9,12 @@
             name="viewModel"
             type="com.penguodev.smartmd.ui.editor.EditorViewModel" />
 
+        <variable
+            name="clickHandler"
+            type="com.penguodev.smartmd.ui.editor.EditorActivity.ClickHandler" />
+
     </data>
+
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -23,9 +28,45 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="Markdown Editor"
-                app:titleTextColor="@color/white" />
+                android:layout_height="32dp"
+                app:contentInsetEnd="0dp"
+                app:contentInsetStart="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="4dp"
+                        android:text="MarkdownEditor v1"
+                        android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/editor_tv_save"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/editor_tv_save"
+                        android:layout_width="72dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorAccent"
+                        android:gravity="center"
+                        android:onClick="@{(view) -> clickHandler.onClickSave(view)}"
+                        android:text="저장"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
         <ScrollView
@@ -37,9 +78,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingStart="16dp"
+                android:paddingStart="24dp"
                 android:paddingTop="16dp"
-                android:paddingEnd="16dp"
+                android:paddingEnd="24dp"
                 android:paddingBottom="16dp">
 
                 <com.penguodev.smartmd.common.ui.MDTextView
@@ -54,7 +95,7 @@
                     android:id="@+id/editor_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#36CCCCCC"
+                    android:background="#00CCCCCC"
                     android:inputType="textMultiLine"
                     android:textColor="@color/black_212121"
                     android:textSize="16sp"
@@ -69,6 +110,6 @@
                     tools:text="Hello\nWorld\nNice\nTo" />
             </LinearLayout>
         </ScrollView>
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </layout>

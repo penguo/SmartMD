@@ -4,15 +4,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.databinding.DataBindingUtil
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.DiffUtil
-import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.penguodev.smartmd.R
-import com.penguodev.smartmd.common.BindingViewHolder
 import com.penguodev.smartmd.databinding.ActivityListBinding
-import com.penguodev.smartmd.databinding.ItemDocumentBinding
-import com.penguodev.smartmd.model.ItemDocument
+import com.penguodev.smartmd.ui.editor.EditorActivity
+import timber.log.Timber
 
 class ListActivity : AppCompatActivity() {
 
@@ -23,14 +22,27 @@ class ListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_list)
+        binding.lifecycleOwner = this
+        binding.clickHandler = ClickHandler()
 
         viewModel = ViewModelProviders.of(this)
             .get(ListViewModel::class.java)
-        adapter = ListRcvAdapter().also { binding.recyclerView.adapter = it }
+            .also { binding.viewModel = it }
+        adapter = ListRcvAdapter().also {
+            binding.recyclerView.adapter = it
+            binding.recyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        }
         viewModel.apply {
             itemList.observe(this@ListActivity, Observer {
+                Timber.d("itemListSize: ${it.size}")
                 adapter.submitList(it)
             })
+        }
+    }
+
+    inner class ClickHandler {
+        fun onClickAdd(view: View) {
+            startActivity(EditorActivity.createActivityIntent(view.context, null))
         }
     }
 }

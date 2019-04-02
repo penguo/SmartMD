@@ -4,9 +4,15 @@ import androidx.lifecycle.LifecycleOwner
 import android.text.*
 import android.view.KeyEvent
 import android.widget.EditText
+import com.penguodev.smartmd.common.fromHtml
 import com.penguodev.smartmd.common.setVisibleGone
 import com.penguodev.smartmd.common.ui.MDTextView
-import timber.log.Timber
+import com.penguodev.smartmd.model.ItemDocument
+import com.penguodev.smartmd.repository.MDDatabase
+import com.penguodev.smartmd.ui.editor.model.MarkdownFormat
+import com.penguodev.smartmd.ui.editor.model.TextLine
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 
 class EditorManager(
@@ -17,46 +23,58 @@ class EditorManager(
 ) {
     private val mdManager = MarkdownManager()
 
-    private val frontList = mutableListOf<String>()
-    private val rearList = mutableListOf<String>()
+    private val frontList = mutableListOf<TextLine>()
+    private val rearList = mutableListOf<TextLine>()
+
+    // 이전 아이템 수정 시 저장용
+    private var prevDocument: ItemDocument? = null
 
     init {
         editText.addTextChangedListener(MDTextWatcher())
         editText.setOnKeyListener { v, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DEL && editText.text.toString() == "") {
-                delete()
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DEL && editText.selectionStart == 0) {
+                onDelPressed()
                 return@setOnKeyListener true
             }
             return@setOnKeyListener false
         }
         initTV()
-        notifyLineChanged("")
+        notifyLineChanged(TextLine(""))
     }
 
     private fun enter() {
         val texts = editText.text.toString().split("\n")
         texts.forEachIndexed { index, s ->
             if (index != texts.size - 1) {
-                frontList.add(s)
+                frontList.add(TextLine(s))
             } else {
-                notifyLineChanged(s)
+                notifyLineChanged(TextLine(s))
             }
         }
     }
 
-    private fun delete() {
-        frontList.lastOrNull()?.let {
-            frontList.remove(it)
-            notifyLineChanged(it)
+    private fun onDelPressed() {
+        when {
+            editText.selectionStart == 0 -> {
+                val prevText = editText.text.toString()
+                frontList.lastOrNull()?.let {
+                    frontList.remove(it)
+                    notifyLineChanged(TextLine(it.text + prevText), it.text.length)
+                }
+            }
+        }
+    }
+
+    fun getList(): List<TextLine> {
+        return mutableListOf<TextLine>().apply {
+            addAll(frontList)
+            add(TextLine(editText.text.toString()))
+            addAll(rearList)
         }
     }
 
     private fun setIndex(index: Int, selection: Int? = null) {
-        mutableListOf<String>().apply {
-            addAll(frontList)
-            add(editText.text.toString())
-            addAll(rearList)
-        }.let {
+        getList().let {
             frontList.clear()
             if (index != 0) {
                 frontList.addAll(it.subList(0, index))
@@ -74,33 +92,38 @@ class EditorManager(
         return frontList.size
     }
 
-    fun notifyLineChanged(text: String, selection: Int? = null) {
-        editText.setText(text)
+    fun notifyLineChanged(line: TextLine, selection: Int? = null) {
+        val etText = line.getSpannable()
+        editText.setText(etText)
         editText.setSelection(selection?.let {
-            if (it > text.length) text.length
+            if (it > etText.length) etText.length
             else it
-        } ?: text.length)
-        frontTV.text = mdManager.apply(if (frontList.isEmpty()) {
-            ""
-        } else {
-            "${frontList.toEditorString()}\n"
-        })
-        rearTV.text = mdManager.apply(if (rearList.isEmpty()) {
-            ""
-        } else {
-            "\n${rearList.toEditorString()}"
-        })
+        } ?: etText.length)
+        frontTV.text = mdManager.apply(
+            if (frontList.isEmpty()) {
+                ""
+            } else {
+                "${frontList.toEditorString()}\n"
+            }
+        )
+        rearTV.text = mdManager.apply(
+            if (rearList.isEmpty()) {
+                ""
+            } else {
+                "\n${rearList.toEditorString()}"
+            }
+        )
         setVisibleGone(frontTV, frontList.isNotEmpty())
         setVisibleGone(rearTV, rearList.isNotEmpty())
     }
 
-    private fun List<String>.toEditorString(): String {
+    private fun List<TextLine>.toEditorString(): String {
         return StringBuilder().apply {
-            this@toEditorString.forEachIndexed { index, s ->
+            this@toEditorString.forEachIndexed { index, textLine ->
                 if (index != 0) {
                     append("\n\n")
                 }
-                append(s)
+                append(textLine.text)
             }
         }.toString()
     }
@@ -109,15 +132,15 @@ class EditorManager(
         frontTV.setOnXYClickListener { view, touchX, touchY ->
             if (touchX == null || touchY == null) return@setOnXYClickListener
             val position = view.getPreciseOffset(touchX.toInt(), touchY.toInt())
-            findClickedLine(view.text, position).let {
-                setIndex(it?.first ?: 0, it?.second)
+            findClickedLine(view.text, position)?.let {
+                setIndex(it.first, it.second)
             }
         }
         rearTV.setOnXYClickListener { view, touchX, touchY ->
             if (touchX == null || touchY == null) return@setOnXYClickListener
             val position = view.getPreciseOffset(touchX.toInt(), touchY.toInt())
-            findClickedLine(view.text, position).let {
-                setIndex((it?.first ?: 0) + getCurrentIndex() + 1, it?.second)
+            findClickedLine(view.text, position)?.let {
+                setIndex((it.first) + getCurrentIndex() + 1, it.second)
             }
         }
     }
@@ -146,6 +169,45 @@ class EditorManager(
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         }
-
     }
+
+    fun setItemDocument(id: Long) {
+        GlobalScope.async {
+            setItemDocument(MDDatabase.instance.documentDao.getItem(id))
+        }
+    }
+
+    fun setItemDocument(item: ItemDocument?) {
+        prevDocument = item
+        if (item == null) return
+        item.text.split("\n\n").toMutableList().let {
+            it.forEachIndexed { index, s ->
+                when (index) {
+                    it.size - 1 -> return@forEachIndexed
+                    it.size - 2 -> notifyLineChanged(TextLine(s))
+                    else -> frontList.add(TextLine(s))
+                }
+            }
+        }
+    }
+
+    fun getItemDocument(): ItemDocument {
+        val list = getList()
+        val header: String? = list.find { it.text.startsWith("# ") }?.text
+        val text = StringBuilder().apply {
+            list.forEachIndexed { index, s ->
+                if (index != 0) {
+                    append("\n\n")
+                }
+                append(s)
+            }
+        }.toString()
+        // 이미 있는 문서 ?: 새로운 문서
+        return prevDocument?.apply {
+            this.header = header
+            this.text = text
+            this.lastUpdateTime = System.currentTimeMillis()
+        } ?: ItemDocument(null, header, text, System.currentTimeMillis(), System.currentTimeMillis())
+    }
+
 }

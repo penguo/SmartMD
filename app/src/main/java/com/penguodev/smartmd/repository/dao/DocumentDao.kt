@@ -14,6 +14,9 @@ interface DocumentDao {
     @Delete
     fun delete(data: ItemDocument)
 
+    @Query("SELECT * FROM ItemDocument WHERE id = :id")
+    fun getItem(id: Long): ItemDocument?
+
     @Query("SELECT * FROM ItemDocument ORDER BY createTime ASC")
     fun getList(): List<ItemDocument>
 

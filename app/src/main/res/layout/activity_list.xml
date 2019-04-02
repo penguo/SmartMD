@@ -7,7 +7,11 @@
 
         <variable
             name="viewModel"
-            type="com.penguodev.smartmd.ui.editor.EditorViewModel" />
+            type="com.penguodev.smartmd.ui.list.ListViewModel" />
+
+        <variable
+            name="clickHandler"
+            type="com.penguodev.smartmd.ui.list.ListActivity.ClickHandler" />
 
     </data>
 
@@ -18,12 +22,14 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="#00000000">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                app:toolbarId="@id/toolbar">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -31,7 +37,7 @@
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:title="Markdown Editor"
-                    app:titleTextColor="@color/white" />
+                    app:titleTextColor="@color/black_212121" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -55,6 +61,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{(view) -> clickHandler.onClickAdd(view)}"
             android:src="@drawable/ic_add"
             app:layout_anchor="@id/bottomAppBar" />
 
