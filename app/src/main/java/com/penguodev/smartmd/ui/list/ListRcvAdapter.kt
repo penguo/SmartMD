@@ -1,7 +1,7 @@
 package com.penguodev.smartmd.ui.list
 
-import android.support.v7.recyclerview.extensions.ListAdapter
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import android.view.ViewGroup
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.common.BindingViewHolder

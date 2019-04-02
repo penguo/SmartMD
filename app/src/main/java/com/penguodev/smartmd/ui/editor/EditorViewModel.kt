@@ -1,7 +1,7 @@
 package com.penguodev.smartmd.ui.editor
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 
 class EditorViewModel : ViewModel() {
 

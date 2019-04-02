@@ -1,7 +1,7 @@
 package com.penguodev.smartmd.ui
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.ui.list.ListActivity

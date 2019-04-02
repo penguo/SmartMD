@@ -1,12 +1,12 @@
 package com.penguodev.smartmd.ui.list
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
-import android.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.recyclerview.extensions.ListAdapter
-import android.support.v7.util.DiffUtil
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import android.view.ViewGroup
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.common.BindingViewHolder

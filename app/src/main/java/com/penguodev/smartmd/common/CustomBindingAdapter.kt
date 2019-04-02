@@ -1,6 +1,6 @@
 package com.penguodev.smartmd.common
 
-import android.databinding.BindingAdapter
+import androidx.databinding.BindingAdapter
 import android.os.Build
 import android.text.Html
 import android.text.Html.FROM_HTML_MODE_LEGACY

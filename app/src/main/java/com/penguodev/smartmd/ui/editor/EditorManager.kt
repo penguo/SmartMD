@@ -1,6 +1,6 @@
 package com.penguodev.smartmd.ui.editor
 
-import android.arch.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 import android.text.*
 import android.view.KeyEvent
 import android.widget.EditText
