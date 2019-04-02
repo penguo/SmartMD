@@ -1,16 +1,9 @@
 package com.penguodev.smartmd.ui.editor
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
-import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.text.Editable
-import android.text.Html
-import android.text.TextWatcher
-import android.util.Log
-import android.view.KeyEvent
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ActivityEditorBinding
 
