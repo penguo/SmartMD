@@ -7,6 +7,8 @@ import android.text.Html.FROM_HTML_MODE_LEGACY
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.*
 
 @BindingAdapter("fromHtml")
 fun fromHtml(view: TextView, text: String?) {
@@ -29,4 +31,13 @@ fun setSrcResId(view: ImageView, resId: Int?) {
     } else {
         view.setImageResource(resId)
     }
+}
+
+@BindingAdapter("autoSaveTime")
+fun setAutoSaveTime(view: TextView, time: Long?) {
+    if (time == null) {
+        view.text = ""
+        return
+    }
+    view.text = SimpleDateFormat("aa hh:mm:ss", Locale.KOREAN).format(Date(time)) + "에 자동 저장됨."
 }

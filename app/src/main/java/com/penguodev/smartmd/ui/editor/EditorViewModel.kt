@@ -9,4 +9,5 @@ class EditorViewModel : ViewModel() {
 //    val focusedLine = MutableLiveData<Int>()
 
     val text = MutableLiveData<String>()
+    val autoSaveTime = MutableLiveData<Long>().apply { value = System.currentTimeMillis() }
 }

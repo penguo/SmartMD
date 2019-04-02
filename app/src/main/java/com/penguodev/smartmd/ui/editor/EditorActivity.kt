@@ -83,5 +83,6 @@ class EditorActivity : AppCompatActivity() {
             .setNeutralButton("종료") { dialog, which ->
                 finish()
             }
+            .show()
     }
 }

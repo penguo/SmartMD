@@ -17,32 +17,44 @@ class MarkdownManager {
     }
 
     private fun applyLine(text: String): String {
-        return if (text.startsWith("#")) {
-            when {
-                text.startsWith("# ") -> "<big><big><big><big><b>${text.removePrefix("# ")}</b></big></big></big></big>"
-                text.startsWith("## ") -> "<big><big><b>${text.removePrefix("## ")}</b></big></big>"
-                text.startsWith("### ") -> "<big><b>${text.removePrefix("### ")}</b></big>"
-                text.startsWith("#### ") -> "<big>${text.removePrefix("#### ")}</big>"
-                text.startsWith("##### ") -> "<b>${text.removePrefix("##### ")}</b>"
-                text.startsWith("###### ") -> "<b>${text.removePrefix("###### ")}</b>"
-                else -> text
+        var t = text
+        return if (t.startsWith("#")) {
+            t = when {
+                t.startsWith("# ") -> "<big><big><big><big><b>${t.removePrefix("# ")}</b></big></big></big></big>"
+                t.startsWith("## ") -> "<big><big><b>${t.removePrefix("## ")}</b></big></big>"
+                t.startsWith("### ") -> "<big><b>${t.removePrefix("### ")}</b></big>"
+                t.startsWith("#### ") -> "<big>${t.removePrefix("#### ")}</big>"
+                t.startsWith("##### ") -> "<b>${t.removePrefix("##### ")}</b>"
+                t.startsWith("###### ") -> "<b>${t.removePrefix("###### ")}</b>"
+                else -> t
             }
+            t
         } else {
-            when {
-                text.startsWith("* ") -> "\u25A0 ${text.removePrefix("* ")}"
-                text.startsWith("- ") -> "\u25A0 ${text.removePrefix("* ")}"
-                text.contains("***") -> text.applyRegex("***", "<b><i>", "</i></b>")
-                text.contains("___") -> text.applyRegex("___", "<b><i>", "</i></b>")
-                text.contains("**") -> text.applyRegex("**", "<b>", "</b>")
-                text.contains("__") -> text.applyRegex("__", "<b>", "</b>")
-                text.contains("*") -> text.applyRegex("*", "<i>", "</i>")
-                text.contains("_") -> text.applyRegex("_", "<i>", "</i>")
-                text.contains("~~") -> text.applyRegex("~~", "<strike>", "</strike>")
-                text.startsWith("> ") -> "$blockquote ${text.removePrefix("> ")}"
-                text.startsWith(">> ") -> "$blockquote$blockquote ${text.removePrefix(">> ")}"
-
-                else -> text
+            var repeat = true
+            while (repeat) {
+                t = when {
+                    t.startsWith("* ") -> "\u25A0 ${t.removePrefix("* ")}"
+                    t.startsWith("- ") -> "\u25A0 ${t.removePrefix("- ")}"
+                    t.startsWith("  * ") -> "    \u25A0 ${t.removePrefix("  * ")}"
+                    t.startsWith("  - ") -> "    \u25A0 ${t.removePrefix("  - ")}"
+                    t.startsWith("    * ") -> "        \u25A0 ${t.removePrefix("    * ")}"
+                    t.startsWith("    - ") -> "        \u25A0 ${t.removePrefix("    - ")}"
+                    t.contains("***") -> t.applyRegex("***", "<b><i>", "</i></b>")
+                    t.contains("___") -> t.applyRegex("___", "<b><i>", "</i></b>")
+                    t.contains("**") -> t.applyRegex("**", "<b>", "</b>")
+                    t.contains("__") -> t.applyRegex("__", "<b>", "</b>")
+                    t.contains("*") -> t.applyRegex("*", "<i>", "</i>")
+                    t.contains("_") -> t.applyRegex("_", "<i>", "</i>")
+                    t.contains("~~") -> t.applyRegex("~~", "<strike>", "</strike>")
+                    t.startsWith("> ") -> "$blockquote ${t.removePrefix("> ")}"
+                    t.startsWith(">> ") -> "$blockquote$blockquote ${t.removePrefix(">> ")}"
+                    else -> {
+                        repeat = false
+                        t
+                    }
+                }
             }
+            t
         }.replace("\n", "<br/>").replace(" ", "&nbsp;")
     }
 
