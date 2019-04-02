@@ -1,0 +1,34 @@
+package com.penguodev.smartmd.ui.list
+
+import android.support.v7.recyclerview.extensions.ListAdapter
+import android.support.v7.util.DiffUtil
+import android.view.ViewGroup
+import com.penguodev.smartmd.R
+import com.penguodev.smartmd.common.BindingViewHolder
+import com.penguodev.smartmd.databinding.ItemDocumentBinding
+import com.penguodev.smartmd.model.ItemDocument
+
+class ListRcvAdapter : ListAdapter<ItemDocument, BindingViewHolder>(object : DiffUtil.ItemCallback<ItemDocument>() {
+    override fun areItemsTheSame(p0: ItemDocument, p1: ItemDocument): Boolean {
+        return p0.id == p1.id
+    }
+
+    override fun areContentsTheSame(p0: ItemDocument, p1: ItemDocument): Boolean {
+        return p0 == p1
+    }
+
+}) {
+    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): BindingViewHolder {
+        return BindingViewHolder.create(p0, R.layout.item_document)
+    }
+
+    override fun onBindViewHolder(p0: BindingViewHolder, p1: Int) {
+        with(p0.binding) {
+            when (this) {
+                is ItemDocumentBinding -> {
+                    this.item = getItem(p1)
+                }
+            }
+        }
+    }
+}
