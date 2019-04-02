@@ -10,6 +10,7 @@ import android.widget.EditText
 import com.penguodev.smartmd.common.ComfyUtil
 import com.penguodev.smartmd.common.setVisibleGone
 import com.penguodev.smartmd.common.ui.MDTextView
+import timber.log.Timber
 
 
 class EditorManager(
@@ -87,13 +88,14 @@ class EditorManager(
         }
         editText.setText(editableLine)
         editText.setSelection(editableLine?.length ?: 0)
-        start.value = afterLine.toString().let { if (it != "") it else null }
+        setLiveValue(start, afterLine.toString())
     }
 
     private fun setLine(line: Int?) {
         val currentLine = getLineIndex()
         val newStart = StringBuilder()
         val newEnd = StringBuilder()
+        Timber.d("setLine: $line, currentLine: $currentLine")
         when {
             line == null -> {
                 return
@@ -106,7 +108,7 @@ class EditorManager(
                 start.value?.split("\n\n")?.forEachIndexed { index, s ->
                     when {
                         index < line -> {
-                            if (index != 0) {
+                            if (index > 0) {
                                 newStart.append("\n\n")
                             }
                             newStart.append(s)
@@ -115,54 +117,53 @@ class EditorManager(
                             text = s
                         }
                         index > line -> {
-                            if (index - line - 1 != 0) {
+                            if (index - line > 1) {
                                 newEnd.append("\n\n")
                             }
                             newEnd.append(s)
                         }
                     }
                 }
-                start.value = newStart.toString()
-                end.value = newEnd.toString() + "\n\n" + end.value
+                setLiveValue(start, newStart.toString())
+                setLiveValue(end, newEnd.toString())
                 editText.setText(text)
-                Log.d("Check", "output: $line $currentLine $text")
+//                var text: String? = null
+//                start.value?.split("\n\n")?.forEachIndexed { index, s ->
+//                    when {
+//                        index < line -> {
+//                            if (index != 0) {
+//                                newStart.append("\n\n")
+//                            }
+//                            newStart.append(s)
+//                        }
+//                        index == line -> {
+//                            text = s
+//                        }
+//                        index > line -> {
+//                            if (index - line - 1 != 0) {
+//                                newEnd.append("\n\n")
+//                            }
+//                            newEnd.append(s)
+//                        }
+//                    }
+//                }
+//                start.value = newStart.toString()
+//                end.value = newEnd.toString() + "\n\n" + end.value
+//                editText.setText(text)
+//                Log.d("Check", "output: $line $currentLine $text")
             }
             line > currentLine -> {
-                var text: String? = null
-                end.value?.split("\n\n")?.forEachIndexed { index, s ->
-                    when {
-                        index + currentLine < line -> {
-                            if (index != 0) {
-                                newStart.append("\n\n")
-                            }
-                            newStart.append(s)
-                        }
-                        index + currentLine == line -> {
-                            text = s
-                        }
-                        index + currentLine > line -> {
-                            if (index - line - 1 != 0) {
-                                newEnd.append("\n\n")
-                            }
-                            newEnd.append(s)
-                        }
-                    }
-                }
-                start.value = start.value + "\n\n" + newStart.toString()
-                end.value = newEnd.toString()
-                editText.setText(text)
-                Log.d("Check", "output: $line $currentLine $text")
             }
             else -> return
         }
     }
 
     fun appendStart(text: String) {
-        start.value = start.value?.let { "$it\n\n$text" } ?: text
+        setLiveValue(start, start.value?.let { "$it\n\n$text" } ?: text)
     }
 
     fun appendEnd(text: String) {
-        end.value = end.value?.let { "$text\n\n$it" } ?: text
+        setLiveValue(end, end.value?.let { "$it\n\n$text" } ?: text)
     }
 
     fun initTV(view: MDTextView) {
@@ -171,6 +172,11 @@ class EditorManager(
             val position = view.getPreciseOffset(touchX.toInt(), touchY.toInt())
             setLine(findClickedLine(view.text, position))
         }
+    }
+
+    fun setLiveValue(liveData: MutableLiveData<String>, text: String?) {
+        if (text == null || text == "") liveData.value = null
+        else liveData.value = text
     }
 
     private fun findClickedLine(text: CharSequence, position: Int): Int? {
