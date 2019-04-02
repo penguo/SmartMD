@@ -25,7 +25,7 @@ class MDTextView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
-    fun setOnXYClickListener(listener: ((view: View, touchX: Float?, touchY: Float?) -> Unit)? = null) {
+    fun setOnXYClickListener(listener: ((view: MDTextView, touchX: Float?, touchY: Float?) -> Unit)? = null) {
         if (listener == null) {
             setOnClickListener(null)
         } else {

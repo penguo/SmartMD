@@ -54,8 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black_212121"
-                    android:textSize="18sp"
-                    android:visibility="gone"
+                    android:textSize="16sp"
                     tools:text="Hello\nWorld\nNice\nTo" />
 
                 <EditText
@@ -65,7 +64,7 @@
                     android:background="#36CCCCCC"
                     android:inputType="textMultiLine"
                     android:textColor="@color/black_212121"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     tools:text="Hello Input Area" />
 
                 <com.penguodev.smartmd.common.ui.MDTextView
@@ -74,7 +73,6 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/black_212121"
                     android:textSize="16sp"
-                    android:visibility="gone"
                     tools:text="Hello\nWorld\nNice\nTo" />
             </LinearLayout>
         </ScrollView>
