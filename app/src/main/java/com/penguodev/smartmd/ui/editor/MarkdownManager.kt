@@ -1,31 +1,41 @@
 package com.penguodev.smartmd.ui.editor
 
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import com.penguodev.smartmd.ui.editor.model.MarkdownFormat
-import java.util.*
-
 class MarkdownManager {
 
-    fun apply(text: String): SpannableStringBuilder {
-        val ssb = SpannableStringBuilder()
-        val list = text.split("\n\n")
+    private var cachedList = mutableListOf<String>()
+
+    fun apply(list: MutableList<String>): String {
+        cachedList.clear()
         list.forEachIndexed { index, s ->
-            if (index != 0) {
-                ssb.append("\n\n")
-            }
-            ssb.append(convert(s))
+            cachedList.add(applyLine(s))
         }
-        return ssb
+        return cachedList.toEditorString()
     }
 
-    private fun convert(text: String): SpannableString {
-        MarkdownFormat.getList().forEach {
-            if (it.condition.invoke(text)) {
-                return it.getSpannableString(text)
+    private fun applyLine(text: String): String {
+        return if (text.startsWith("#")) {
+            when {
+                text.startsWith("# ") -> "<big><big><big><b>${text.removePrefix("# ")}</b></big></big></big>"
+                text.startsWith("## ") -> "<big><big><b>${text.removePrefix("## ")}</b></big></big>"
+                text.startsWith("### ") -> "<big><b>${text.removePrefix("### ")}</b></big>"
+                text.startsWith("#### ") -> "<big>${text.removePrefix("#### ")}</big>"
+                text.startsWith("##### ") -> "<b>${text.removePrefix("##### ")}</b>"
+                text.startsWith("###### ") -> "<b>${text.removePrefix("###### ")}</b>"
+                else -> text
             }
-        }
-        return SpannableString(text)
+        } else {
+            text
+        }.replace("\n", "<br/>")
     }
 
+    private fun List<String>.toEditorString(): String {
+        return StringBuilder().apply {
+            this@toEditorString.forEachIndexed { index, s ->
+                if (index != 0) {
+                    append("<br/><br/>")
+                }
+                append(s)
+            }
+        }.toString()
+    }
 }

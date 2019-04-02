@@ -1,6 +1,5 @@
 package com.penguodev.smartmd.ui.editor
 
-import androidx.lifecycle.LifecycleOwner
 import android.text.*
 import android.view.KeyEvent
 import android.widget.EditText
@@ -9,22 +8,19 @@ import com.penguodev.smartmd.common.setVisibleGone
 import com.penguodev.smartmd.common.ui.MDTextView
 import com.penguodev.smartmd.model.ItemDocument
 import com.penguodev.smartmd.repository.MDDatabase
-import com.penguodev.smartmd.ui.editor.model.MarkdownFormat
-import com.penguodev.smartmd.ui.editor.model.TextLine
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
-
 class EditorManager(
-    lifecycleOwner: LifecycleOwner,
+    private val viewModel: EditorViewModel,
     private val frontTV: MDTextView,
     private val editText: EditText,
     private val rearTV: MDTextView
 ) {
     private val mdManager = MarkdownManager()
 
-    private val frontList = mutableListOf<TextLine>()
-    private val rearList = mutableListOf<TextLine>()
+    private val frontList = mutableListOf<String>()
+    private val rearList = mutableListOf<String>()
 
     // 이전 아이템 수정 시 저장용
     private var prevDocument: ItemDocument? = null
@@ -39,16 +35,16 @@ class EditorManager(
             return@setOnKeyListener false
         }
         initTV()
-        notifyLineChanged(TextLine(""))
+        notifyLineChanged("")
     }
 
     private fun enter() {
         val texts = editText.text.toString().split("\n")
         texts.forEachIndexed { index, s ->
             if (index != texts.size - 1) {
-                frontList.add(TextLine(s))
+                frontList.add(s)
             } else {
-                notifyLineChanged(TextLine(s))
+                notifyLineChanged(s)
             }
         }
     }
@@ -59,16 +55,16 @@ class EditorManager(
                 val prevText = editText.text.toString()
                 frontList.lastOrNull()?.let {
                     frontList.remove(it)
-                    notifyLineChanged(TextLine(it.text + prevText), it.text.length)
+                    notifyLineChanged(it + prevText, it.length)
                 }
             }
         }
     }
 
-    fun getList(): List<TextLine> {
-        return mutableListOf<TextLine>().apply {
+    fun getList(): List<String> {
+        return mutableListOf<String>().apply {
             addAll(frontList)
-            add(TextLine(editText.text.toString()))
+            add(editText.text.toString())
             addAll(rearList)
         }
     }
@@ -92,40 +88,28 @@ class EditorManager(
         return frontList.size
     }
 
-    fun notifyLineChanged(line: TextLine, selection: Int? = null) {
-        val etText = line.getSpannable()
-        editText.setText(etText)
+    fun notifyLineChanged(text: String, selection: Int? = null) {
+        // 텍스트에 포맷 적용
+//        editText.setText(if (text.startsWith("#")) {
+//            MarkdownFormat.findFormat(text)?.let { format ->
+//                SpannableString(text).apply {
+//                    format.spans.forEach {
+//                        this.setSpan(it, 0, this.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+//                    }
+//                }
+//            }
+//        } else {
+//            SpannableString(text)
+//        })
+        editText.setText(text)
         editText.setSelection(selection?.let {
-            if (it > etText.length) etText.length
+            if (it > text.length) text.length
             else it
-        } ?: etText.length)
-        frontTV.text = mdManager.apply(
-            if (frontList.isEmpty()) {
-                ""
-            } else {
-                "${frontList.toEditorString()}\n"
-            }
-        )
-        rearTV.text = mdManager.apply(
-            if (rearList.isEmpty()) {
-                ""
-            } else {
-                "\n${rearList.toEditorString()}"
-            }
-        )
+        } ?: text.length)
+        fromHtml(frontTV, "${mdManager.apply(frontList)}<br/>")
+        fromHtml(rearTV, "<br/>${mdManager.apply(rearList)}")
         setVisibleGone(frontTV, frontList.isNotEmpty())
         setVisibleGone(rearTV, rearList.isNotEmpty())
-    }
-
-    private fun List<TextLine>.toEditorString(): String {
-        return StringBuilder().apply {
-            this@toEditorString.forEachIndexed { index, textLine ->
-                if (index != 0) {
-                    append("\n\n")
-                }
-                append(textLine.text)
-            }
-        }.toString()
     }
 
     fun initTV() {
@@ -158,10 +142,25 @@ class EditorManager(
     }
 
     inner class MDTextWatcher : TextWatcher {
+        private var wait: Long = System.currentTimeMillis()
         override fun afterTextChanged(s: Editable?) {
             if (s?.contains("\n") == true) {
                 enter()
             }
+//            GlobalScope.async {
+//                val time = System.currentTimeMillis()
+//                wait = time
+//                delay(100)
+//                if (wait == time) {
+//                    Timber.e("triggered! $time")
+//                    val format = MarkdownFormat.findFormat(s.toString())
+//                    if (format != null) {
+//                        editText.setTypeface(editText.typeface, Typeface.BOLD)
+//                    } else {
+//                        editText.setTypeface(editText.typeface, Typeface.NORMAL)
+//                    }
+//                }
+//            }
         }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -184,8 +183,8 @@ class EditorManager(
             it.forEachIndexed { index, s ->
                 when (index) {
                     it.size - 1 -> return@forEachIndexed
-                    it.size - 2 -> notifyLineChanged(TextLine(s))
-                    else -> frontList.add(TextLine(s))
+                    it.size - 2 -> notifyLineChanged(s)
+                    else -> frontList.add(s)
                 }
             }
         }
@@ -193,7 +192,7 @@ class EditorManager(
 
     fun getItemDocument(): ItemDocument {
         val list = getList()
-        val header: String? = list.find { it.text.startsWith("# ") }?.text
+        val header: String? = list.find { it.startsWith("# ") }
         val text = StringBuilder().apply {
             list.forEachIndexed { index, s ->
                 if (index != 0) {
@@ -209,5 +208,4 @@ class EditorManager(
             this.lastUpdateTime = System.currentTimeMillis()
         } ?: ItemDocument(null, header, text, System.currentTimeMillis(), System.currentTimeMillis())
     }
-
 }

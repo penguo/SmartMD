@@ -38,7 +38,7 @@ class EditorActivity : AppCompatActivity() {
             .apply {
                 manager =
                     EditorManager(
-                        this@EditorActivity,
+                        this@apply,
                         binding.editorTvStart,
                         binding.editorEt,
                         binding.editorTvEnd
