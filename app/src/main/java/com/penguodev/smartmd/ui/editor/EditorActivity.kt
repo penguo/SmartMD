@@ -73,7 +73,7 @@ class EditorActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         AlertDialog.Builder(this)
-            .setTitle("저장하시겠습니까?")
+            .setMessage("저장하시겠습니까?")
             .setPositiveButton("저장") { dialog, which ->
                 saveAndFinish()
             }

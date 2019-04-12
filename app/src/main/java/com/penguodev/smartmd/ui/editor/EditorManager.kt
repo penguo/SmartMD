@@ -184,26 +184,25 @@ class EditorManager(
         item.text.split("\n\n").toMutableList().let {
             it.forEachIndexed { index, s ->
                 when (index) {
-                    it.size - 1 -> return@forEachIndexed
-                    it.size - 2 -> notifyLineChanged(s)
+                    it.size - 1 -> notifyLineChanged(s)
                     else -> frontList.add(s)
                 }
             }
         }
     }
 
-        fun getItemDocument(): ItemDocument {
-            val list = getList()
-            val header: String? = list.find { it.startsWith("# ") }?.removePrefix("# ")
-            val text = StringBuilder().apply {
-                list.forEachIndexed { index, s ->
-                    if (index != 0) {
-                        append("\n\n")
-                    }
-                    append(s)
+    fun getItemDocument(): ItemDocument {
+        val list = getList()
+        val header: String? = list.find { it.startsWith("# ") }?.removePrefix("# ")
+        val text = StringBuilder().apply {
+            list.forEachIndexed { index, s ->
+                if (index != 0) {
+                    append("\n\n")
                 }
-            }.toString()
-            // 이미 있는 문서 ?: 새로운 문서
+                append(s)
+            }
+        }.toString()
+        // 이미 있는 문서 ?: 새로운 문서
         return prevDocument?.apply {
             this.header = header
             this.text = text

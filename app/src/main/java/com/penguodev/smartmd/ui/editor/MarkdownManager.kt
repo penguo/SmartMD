@@ -20,7 +20,7 @@ class MarkdownManager {
         var t = text
         return if (t.startsWith("#")) {
             t = when {
-                t.startsWith("# ") -> "<big><big><big><big><b>${t.removePrefix("# ")}</b></big></big></big></big>"
+                t.startsWith("# ") -> "<big><big><big><b>${t.removePrefix("# ")}</b></big></big></big>"
                 t.startsWith("## ") -> "<big><big><b>${t.removePrefix("## ")}</b></big></big>"
                 t.startsWith("### ") -> "<big><b>${t.removePrefix("### ")}</b></big>"
                 t.startsWith("#### ") -> "<big>${t.removePrefix("#### ")}</big>"
