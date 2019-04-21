@@ -24,7 +24,7 @@ class ViewerManager(
     private val list = mutableListOf<String>()
 
     private fun update() {
-        fromHtml(textView, mdManager.apply(list))
+        fromHtml(textView, "<br/>" + mdManager.apply(list) + "<br/>")
     }
 
     fun setItemDocument(id: Long) {

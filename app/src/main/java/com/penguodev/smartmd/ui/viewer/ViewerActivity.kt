@@ -8,6 +8,7 @@ import android.text.method.ScrollingMovementMethod
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.penguodev.smartmd.MDApplication.Companion.RC_VIEWER_TO_EDITOR
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ActivityViewerBinding
 import com.penguodev.smartmd.ui.editor.EditorActivity
@@ -15,8 +16,6 @@ import com.penguodev.smartmd.ui.editor.EditorActivity
 class ViewerActivity : AppCompatActivity() {
 
     companion object {
-
-        const val RC_VIEWER_TO_EDITOR = 1001
 
         fun createActivityIntent(context: Context, documentId: Long?): Intent {
             return Intent(context, ViewerActivity::class.java).apply {
