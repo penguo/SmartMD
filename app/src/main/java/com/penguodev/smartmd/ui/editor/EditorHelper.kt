@@ -2,6 +2,7 @@ package com.penguodev.smartmd.ui.editor
 
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -102,12 +103,15 @@ enum class EditorHelperOption(
 
 private fun getAddAndAddListener(title: String, text: String): (v: View, et: EditText, btn: Button) -> Unit {
     return { v, et, btn ->
+        val middle = et.selectionStart + text.length
         et.text.insert(et.selectionStart, text)
-        btn.text = "$title 완료"
-        btn.setOnClickListener {
-            et.text.insert(et.selectionStart, text)
-            btn.visibility = View.GONE
-        }
-        btn.visibility = View.VISIBLE
+        et.text.insert(et.selectionStart, text)
+        et.setSelection(middle)
+//        btn.text = "$title 완료"
+//        btn.setOnClickListener {
+//            et.text.insert(et.selectionStart, text)
+//            btn.visibility = View.GONE
+//        }
+//        btn.visibility = View.VISIBLE
     }
 }

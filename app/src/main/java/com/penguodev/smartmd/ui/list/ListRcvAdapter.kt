@@ -7,7 +7,7 @@ import com.penguodev.smartmd.R
 import com.penguodev.smartmd.common.BindingViewHolder
 import com.penguodev.smartmd.databinding.ItemDocumentBinding
 import com.penguodev.smartmd.model.ItemDocument
-import com.penguodev.smartmd.ui.editor.EditorActivity
+import com.penguodev.smartmd.ui.viewer.ViewerActivity
 
 class ListRcvAdapter : ListAdapter<ItemDocument, BindingViewHolder>(object : DiffUtil.ItemCallback<ItemDocument>() {
     override fun areItemsTheSame(p0: ItemDocument, p1: ItemDocument): Boolean {
@@ -22,7 +22,7 @@ class ListRcvAdapter : ListAdapter<ItemDocument, BindingViewHolder>(object : Dif
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): BindingViewHolder {
         return BindingViewHolder.create(p0, R.layout.item_document).apply {
             binding.root.setOnClickListener {
-                it.context.startActivity(EditorActivity.createActivityIntent(it.context, getItem(adapterPosition).id))
+                it.context.startActivity(ViewerActivity.createActivityIntent(it.context, getItem(adapterPosition).id))
             }
         }
     }

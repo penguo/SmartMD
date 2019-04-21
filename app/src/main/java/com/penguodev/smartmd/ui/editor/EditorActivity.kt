@@ -1,5 +1,6 @@
 package com.penguodev.smartmd.ui.editor
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
@@ -41,7 +42,6 @@ class EditorActivity : AppCompatActivity() {
             .apply {
                 manager =
                     EditorManager(
-                        this@apply,
                         binding.editorTvStart,
                         binding.editorEt,
                         binding.editorTvEnd
@@ -58,6 +58,12 @@ class EditorActivity : AppCompatActivity() {
         fun onClickSave(view: View) {
             saveAndFinish()
         }
+
+        fun onClickBackground(view: View) {
+            Timber.d("onClcikBackground")
+            viewModel.manager.setIndex(viewModel.manager.getSize() - 1)
+            SoftKeyManager.show(binding.editorEt)
+        }
     }
 
     private fun saveAndFinish() {
@@ -67,6 +73,7 @@ class EditorActivity : AppCompatActivity() {
                     MDDatabase.instance.documentDao.submit(it)
                 }
             }
+            setResult(Activity.RESULT_OK)
             finish()
         }
     }

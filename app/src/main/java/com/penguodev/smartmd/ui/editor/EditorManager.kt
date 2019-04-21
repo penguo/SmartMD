@@ -2,7 +2,9 @@ package com.penguodev.smartmd.ui.editor
 
 import android.text.*
 import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import com.penguodev.smartmd.common.SoftKeyManager
 import com.penguodev.smartmd.common.fromHtml
 import com.penguodev.smartmd.common.setVisibleGone
@@ -11,18 +13,18 @@ import com.penguodev.smartmd.model.ItemDocument
 import com.penguodev.smartmd.repository.MDDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import timber.log.Timber
 
 class EditorManager(
-    private val viewModel: EditorViewModel,
     private val frontTV: MDTextView,
     private val editText: EditText,
     private val rearTV: MDTextView
 ) {
+
     private val mdManager = MarkdownManager()
 
     private val frontList = mutableListOf<String>()
     private val rearList = mutableListOf<String>()
-
     // 이전 아이템 수정 시 저장용
     private var prevDocument: ItemDocument? = null
 
@@ -36,7 +38,7 @@ class EditorManager(
             return@setOnKeyListener false
         }
         initTV()
-        notifyLineChanged("")
+        setNewDocument()
     }
 
     private fun enter() {
@@ -70,7 +72,11 @@ class EditorManager(
         }
     }
 
-    private fun setIndex(index: Int, selection: Int? = null) {
+    fun getSize(): Int {
+        return frontList.size + rearList.size + 1
+    }
+
+    fun setIndex(index: Int, selection: Int? = null) {
         getList().let {
             frontList.clear()
             if (index != 0) {
@@ -189,6 +195,11 @@ class EditorManager(
                 }
             }
         }
+    }
+
+    fun setNewDocument() {
+        prevDocument = null
+        notifyLineChanged("# ")
     }
 
     fun getItemDocument(): ItemDocument {

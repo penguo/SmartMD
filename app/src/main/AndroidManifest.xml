@@ -20,6 +20,7 @@
         </activity>
         <activity android:name=".ui.editor.EditorActivity" />
         <activity android:name=".ui.list.ListActivity" />
+        <activity android:name=".ui.viewer.ViewerActivity" />
     </application>
 
 </manifest>

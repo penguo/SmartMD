@@ -4,6 +4,7 @@ import androidx.databinding.BindingAdapter
 import android.os.Build
 import android.text.Html
 import android.text.Html.FROM_HTML_MODE_LEGACY
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -39,7 +40,7 @@ fun setAutoSaveTime(view: TextView, time: Long?) {
         view.text = ""
         return
     }
-    view.text = SimpleDateFormat("aa hh:mm:ss", Locale.KOREAN).format(Date(time)) + "에 자동 저장됨."
+    view.text = SimpleDateFormat("aa h:mm:ss", Locale.KOREAN).format(Date(time)) + "에 저장됨."
 }
 
 @BindingAdapter("lastUpdateTime")
@@ -48,5 +49,5 @@ fun setLastUpdateTime(view: TextView, time: Long?) {
         view.text = ""
         return
     }
-    view.text = "최근 수정일: " + SimpleDateFormat("yyyy년 M월 d일 aa hh:mm:ss", Locale.KOREAN).format(Date(time))
+    view.text = "최근 수정일: " + SimpleDateFormat("yyyy. M. d. aa h:mm:ss", Locale.KOREAN).format(Date(time))
 }

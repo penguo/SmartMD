@@ -17,10 +17,10 @@ interface DocumentDao {
     @Query("SELECT * FROM ItemDocument WHERE id = :id")
     fun getItem(id: Long): ItemDocument?
 
-    @Query("SELECT * FROM ItemDocument ORDER BY createTime ASC")
+    @Query("SELECT * FROM ItemDocument ORDER BY lastUpdateTime ASC")
     fun getList(): List<ItemDocument>
 
-    @Query("SELECT * FROM ItemDocument ORDER BY createTime ASC")
+    @Query("SELECT * FROM ItemDocument ORDER BY lastUpdateTime ASC")
     fun getLiveList(): LiveData<List<ItemDocument>>
 
 }
