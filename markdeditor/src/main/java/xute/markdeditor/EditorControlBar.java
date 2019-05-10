@@ -30,6 +30,7 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
     private TextView normalTextBtn;
     private TextView headingBtn, headingNumberBtn;
     private ImageView bulletBtn;
+    private ImageView numbersBtn;
     private ImageView blockQuoteBtn;
     private ImageView linkBtn;
     private ImageView hrBtn;
@@ -56,6 +57,7 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
         headingBtn = view.findViewById(R.id.headingBtn);
         headingNumberBtn = view.findViewById(R.id.headingNumberBtn);
         bulletBtn = view.findViewById(R.id.bulletBtn);
+        numbersBtn = view.findViewById(R.id.numbersBtn);
         blockQuoteBtn = view.findViewById(R.id.blockquoteBtn);
         linkBtn = view.findViewById(R.id.insertLinkBtn);
         hrBtn = view.findViewById(R.id.insertHrBtn);
@@ -67,6 +69,7 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
         headingBtn.setTextColor(disabledColor);
         headingNumberBtn.setTextColor(disabledColor);
         bulletBtn.setColorFilter(disabledColor);
+        numbersBtn.setColorFilter(disabledColor);
         blockQuoteBtn.setColorFilter(disabledColor);
         linkBtn.setColorFilter(disabledColor);
         hrBtn.setColorFilter(disabledColor);
@@ -115,24 +118,37 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
         bulletBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (ulEnabled) {
+                    //switch to normal
+                    mEditor.setHeading(NORMAL);
+                    invalidateStates(MODE_PLAIN, NORMAL);
+                    olEnabled = false;
+                    ulEnabled = false;
+                } else {
+                    // switch to ul mode
+                    mEditor.changeToULMode();
+                    invalidateStates(MODE_UL, NORMAL);
+                    ulEnabled = true;
+                    olEnabled = false;
+                }
+            }
+        });
+
+        numbersBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 if (olEnabled) {
                     //switch to normal
                     mEditor.setHeading(NORMAL);
                     invalidateStates(MODE_PLAIN, NORMAL);
                     olEnabled = false;
                     ulEnabled = false;
-                } else if (ulEnabled) {
+                } else {
                     // switch to ol mode
                     mEditor.changeToOLMode();
                     invalidateStates(MODE_OL, NORMAL);
                     olEnabled = true;
                     ulEnabled = false;
-                } else if (!olEnabled && !ulEnabled) {
-                    // switch to ul mode
-                    mEditor.changeToULMode();
-                    invalidateStates(MODE_UL, NORMAL);
-                    ulEnabled = true;
-                    olEnabled = false;
                 }
             }
         });
@@ -205,17 +221,18 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
             if (isOrdered) {
                 olEnabled = true;
                 ulEnabled = false;
-                bulletBtn.setImageResource(R.drawable.ol);
+                numbersBtn.setColorFilter(enabledColor);
+                bulletBtn.setColorFilter(disabledColor);
             } else {
                 ulEnabled = true;
                 olEnabled = false;
-                bulletBtn.setImageResource(R.drawable.ul);
+                numbersBtn.setColorFilter(disabledColor);
+                bulletBtn.setColorFilter(enabledColor);
             }
-            bulletBtn.setColorFilter(enabledColor);
         } else {
             ulEnabled = false;
             olEnabled = false;
-            bulletBtn.setImageResource(R.drawable.ul);
+            numbersBtn.setColorFilter(disabledColor);
             bulletBtn.setColorFilter(disabledColor);
         }
     }

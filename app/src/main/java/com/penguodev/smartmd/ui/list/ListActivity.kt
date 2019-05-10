@@ -1,5 +1,6 @@
 package com.penguodev.smartmd.ui.list
 
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.databinding.DataBindingUtil
@@ -42,7 +43,8 @@ class ListActivity : AppCompatActivity() {
 
     inner class ClickHandler {
         fun onClickAdd(view: View) {
-            startActivity(EditorActivity.createActivityIntent(view.context, null))
+//            startActivity(EditorActivity.createActivityIntent(view.context, null))
+            startActivity(Intent(this@ListActivity, EditorActivity::class.java))
         }
     }
 }

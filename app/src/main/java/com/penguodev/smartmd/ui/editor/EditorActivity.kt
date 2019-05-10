@@ -3,21 +3,21 @@ package com.penguodev.smartmd.ui.editor
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.ViewModelProviders
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.penguodev.smartmd.R
-import com.penguodev.smartmd.common.SoftKeyManager
-import com.penguodev.smartmd.databinding.ActivityEditorBinding
+import com.penguodev.smartmd.databinding.ActivityEditor2Binding
+import com.penguodev.smartmd.model.ItemDocument
 import com.penguodev.smartmd.repository.MDDatabase
-import kotlinx.coroutines.*
-import timber.log.Timber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import xute.markdeditor.Styles.TextComponentStyle.NORMAL
 
 class EditorActivity : AppCompatActivity() {
-
     companion object {
         fun createActivityIntent(context: Context, documentId: Long?): Intent {
             return Intent(context, EditorActivity::class.java).apply {
@@ -26,70 +26,47 @@ class EditorActivity : AppCompatActivity() {
         }
     }
 
-    private lateinit var binding: ActivityEditorBinding
-    private lateinit var viewModel: EditorViewModel
+    private lateinit var binding: ActivityEditor2Binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_editor)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_editor2)
         binding.lifecycleOwner = this
         binding.clickHandler = ClickHandler()
 
-        val documentId = intent.getLongExtra("documentId", -1L)
-
-        viewModel = ViewModelProviders.of(this@EditorActivity)
-            .get(EditorViewModel::class.java)
-            .apply {
-                manager =
-                    EditorManager(
-                        binding.editorTvStart,
-                        binding.editorEt,
-                        binding.editorTvEnd
-                    ).apply {
-                        if (documentId != -1L) {
-                            setItemDocument(documentId)
-                        }
-                    }
-            }.also { binding.viewModel = it }
-        EditorHelper(binding.recyclerViewBottom, binding.editorEt, binding.editorBtnOption)
+        binding.mdEditor.configureEditor(
+            "",
+            "",
+            false,
+            "Input Here...",
+            NORMAL
+        )
+        binding.controlBar.setEditor(binding.mdEditor)
     }
 
     inner class ClickHandler {
+
         fun onClickSave(view: View) {
             saveAndFinish()
-        }
-
-        fun onClickBackground(view: View) {
-            Timber.d("onClcikBackground")
-            viewModel.manager.setIndex(viewModel.manager.getSize() - 1)
-            SoftKeyManager.show(binding.editorEt)
         }
     }
 
     private fun saveAndFinish() {
         GlobalScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.Default) {
-                viewModel.manager.getItemDocument().let {
+                val currentTime = System.currentTimeMillis()
+                ItemDocument(
+                    null,
+                    "TEST $currentTime",
+                    binding.mdEditor.markdownContent,
+                    currentTime,
+                    currentTime
+                ).let {
                     MDDatabase.instance.documentDao.submit(it)
                 }
             }
             setResult(Activity.RESULT_OK)
             finish()
         }
-    }
-
-    override fun onBackPressed() {
-        AlertDialog.Builder(this)
-            .setMessage("저장하시겠습니까?")
-            .setPositiveButton("저장") { dialog, which ->
-                saveAndFinish()
-            }
-            .setNegativeButton("취소") { dialog, which ->
-
-            }
-            .setNeutralButton("종료") { dialog, which ->
-                finish()
-            }
-            .show()
     }
 }

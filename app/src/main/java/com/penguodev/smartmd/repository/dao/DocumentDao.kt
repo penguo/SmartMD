@@ -17,6 +17,9 @@ interface DocumentDao {
     @Query("SELECT * FROM ItemDocument WHERE id = :id")
     fun getItem(id: Long): ItemDocument?
 
+    @Query("SELECT * FROM ItemDocument WHERE id = :id")
+    fun getLiveItem(id: Long): LiveData<ItemDocument>
+
     @Query("SELECT * FROM ItemDocument ORDER BY lastUpdateTime DESC")
     fun getList(): List<ItemDocument>
 

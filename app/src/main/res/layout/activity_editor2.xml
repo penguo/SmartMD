@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="viewModel"
-            type="com.penguodev.smartmd.ui.editor.EditorViewModel" />
-
         <variable
             name="clickHandler"
             type="com.penguodev.smartmd.ui.editor.EditorActivity.ClickHandler" />
@@ -49,7 +44,6 @@
                         android:textColor="@color/caption"
                         android:textSize="12sp"
                         android:visibility="gone"
-                        app:autoSaveTime="@{viewModel.autoSaveTime}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/editor_tv_save"
                         app:layout_constraintStart_toStartOf="parent"
@@ -81,6 +75,7 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:background="@color/white"
                 app:layout_constraintBottom_toTopOf="@id/editor_section_option"
                 app:layout_constraintTop_toTopOf="parent">
 
