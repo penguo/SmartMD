@@ -16,6 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xute.markdeditor.Styles.TextComponentStyle.NORMAL
+import xute.markdeditor.models.DraftModel
 
 class EditorActivity : AppCompatActivity() {
     companion object {
@@ -58,7 +59,7 @@ class EditorActivity : AppCompatActivity() {
                 ItemDocument(
                     null,
                     "TEST $currentTime",
-                    binding.mdEditor.markdownContent,
+                    binding.mdEditor.draft.toJson(),
                     currentTime,
                     currentTime
                 ).let {
