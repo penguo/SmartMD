@@ -21,7 +21,7 @@
     <EditText
         android:background="@drawable/blockquote_component_bg"
         android:id="@+id/text"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textColorHint="#cacaca"
         android:paddingLeft="4dp"
         android:paddingTop="16dp"

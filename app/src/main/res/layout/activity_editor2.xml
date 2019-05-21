@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="clickHandler"
             type="com.penguodev.smartmd.ui.editor.EditorActivity.ClickHandler" />
@@ -109,10 +110,114 @@
                 android:elevation="2dp"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-                <xute.markdeditor.EditorControlBar
-                    android:id="@+id/controlBar"
+                <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp" />
+                    android:layout_height="48dp">
+
+                    <TextView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:text="#"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black_777777" />
+
+                    <TextView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:text="*"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black_777777" />
+
+                    <TextView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:text="~"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black_777777" />
+
+                    <TextView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:text="[ ]"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black_777777" />
+
+                    <TextView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:text="( )"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black_777777" />
+
+                    <TextView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black_777777" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <View
+                        android:layout_width="0.5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black_777777" />
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="10dp"
+                        android:src="@drawable/image" />
+                </LinearLayout>
+
+                <xute.markdeditor.EditorControlBar
+                android:id="@+id/controlBar"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

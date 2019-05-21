@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.penguodev.smartmd.R
@@ -15,8 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import xute.markdeditor.EditorControlBar
 import xute.markdeditor.Styles.TextComponentStyle.NORMAL
-import xute.markdeditor.models.DraftModel
 
 class EditorActivity : AppCompatActivity() {
     companion object {
@@ -43,6 +44,16 @@ class EditorActivity : AppCompatActivity() {
             NORMAL
         )
         binding.controlBar.setEditor(binding.mdEditor)
+        binding.controlBar.setEditorControlListener(object: EditorControlBar.EditorControlListener{
+            override fun onInsertImageClicked() {
+                Toast.makeText(this@EditorActivity, getString(R.string.unsupported), Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onInsertLinkClicked() {
+                Toast.makeText(this@EditorActivity, getString(R.string.unsupported), Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
     inner class ClickHandler {

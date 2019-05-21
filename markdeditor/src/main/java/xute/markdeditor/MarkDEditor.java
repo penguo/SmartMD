@@ -567,4 +567,6 @@ public class MarkDEditor extends MarkDCore implements
     public interface EditorFocusReporter {
         void onFocusedViewHas(int mode, int textComponentStyle);
     }
+
+
 }

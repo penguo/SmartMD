@@ -1,9 +1,7 @@
 package xute.markdeditor;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -11,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import static xute.markdeditor.Styles.TextComponentStyle.BLOCKQUOTE;
 import static xute.markdeditor.Styles.TextComponentStyle.H1;
@@ -62,8 +61,8 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
         linkBtn = view.findViewById(R.id.insertLinkBtn);
         hrBtn = view.findViewById(R.id.insertHrBtn);
         imageBtn = view.findViewById(R.id.insertImageBtn);
-        enabledColor = Color.parseColor("#0994cf");
-        disabledColor = Color.parseColor("#3e3e3e");
+        enabledColor = ContextCompat.getColor(context, R.color.colorAccent);
+        disabledColor = ContextCompat.getColor(context, R.color.white);
 
         normalTextBtn.setTextColor(enabledColor);
         headingBtn.setTextColor(disabledColor);
@@ -179,7 +178,7 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
             @Override
             public void onClick(View view) {
                 if (editorControlListener != null) {
-                    editorControlListener.onInserLinkClicked();
+                    editorControlListener.onInsertLinkClicked();
                 }
             }
         });
@@ -309,6 +308,6 @@ public class EditorControlBar extends FrameLayout implements MarkDEditor.EditorF
     public interface EditorControlListener {
         void onInsertImageClicked();
 
-        void onInserLinkClicked();
+        void onInsertLinkClicked();
     }
 }

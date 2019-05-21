@@ -4,12 +4,19 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.text.Editable;
+import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.core.content.ContextCompat;
 import xute.markdeditor.R;
 import xute.markdeditor.models.ComponentTag;
 import xute.markdeditor.models.TextComponentModel;
@@ -50,7 +57,7 @@ public class TextComponent {
                 if (keyEvent.getAction() != KeyEvent.ACTION_DOWN)
                     return true;
                 if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    if (_textComponentCallback != null) {
+                    if (_textComponentCallback != null && et.getSelectionStart() == 0) {
                         _textComponentCallback.onRemoveTextComponent(((ComponentTag) customInput.getTag()).getComponentIndex());
                     }
                 }
@@ -68,6 +75,8 @@ public class TextComponent {
                 }
             }
         });
+
+        et.setMovementMethod(LinkMovementMethod.getInstance());
 
         et.addTextChangedListener(new TextWatcher() {
             @Override
@@ -116,7 +125,62 @@ public class TextComponent {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                Log.d("TextComponent", "afterTextChanged called.");
+//                editable.setSpan(new StyleSpan(Typeface.NORMAL), 0, editable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_212121)), 0, editable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                String before = editable.toString();
 
+                // BOLD
+                String target = "\\*\\*";
+                int targetLength = 2;
+                if (before.contains(target)) {
+                    Log.d("TextComponent", "bold detected.");
+                    String[] temp = before.split(target);
+
+                    // TODO:: repeat
+                    if (temp.length > 2) {
+                        int startPos = temp[0].length();
+                        int endPos = startPos + temp[1].length() + targetLength * 2;
+                        editable.setSpan(new StyleSpan(Typeface.BOLD), startPos, endPos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_777777)), startPos, startPos + targetLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_777777)), endPos - targetLength, endPos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
+
+                // ITALIC
+                target = "\\*";
+                targetLength = 1;
+                if (before.contains(target)) {
+                    String[] temp = before.split(target);
+
+                    // TODO:: repeat
+                    if (temp.length > 2) {
+                        int startPos = temp[0].length();
+                        int endPos = startPos + temp[1].length() + targetLength * 2;
+                        editable.setSpan(new StyleSpan(Typeface.ITALIC), startPos, endPos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_777777)), startPos, startPos + targetLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_777777)), endPos - targetLength, endPos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
+
+                // LINK
+                target = "link";
+                targetLength = 4;
+                if (before.contains(target)) {
+                    String[] temp = before.split(target);
+                    if (temp.length >= 2) {
+                        int startPos = temp[0].length();
+                        int endPos = startPos + targetLength;
+                        editable.setSpan(new ClickableSpan() {
+                            @Override
+                            public void onClick(View widget) {
+
+                            }
+                        }, startPos, endPos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_777777)), 0, startPos, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_777777)), endPos, before.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
             }
         });
 
