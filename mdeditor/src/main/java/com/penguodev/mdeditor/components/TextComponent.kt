@@ -8,8 +8,8 @@ enum class TextMode {
     UL, OL
 }
 
-interface Component {
+interface MdComponent {
 
 }
 
-data class Text(val text: String, val header: TextHeader?, val mode: TextMode?) : Component
+data class TextComponent(var text: String, var header: TextHeader?, var mode: TextMode?) : MdComponent

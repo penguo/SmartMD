@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
         <variable
             name="item"
             type="com.penguodev.mdeditor.components.TextComponent" />
+
 
     </data>
 
@@ -29,18 +29,18 @@
             android:textSize="16sp"
             android:visibility="gone" />
 
-        <com.penguodev.mdeditor.MdTextView
-            android:id="@+id/text"
+        <EditText
+            android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="8dp"
+            android:background="@null"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="@{item.text}"
             android:textColor="@color/black_212121"
+            android:text="@{item.text}"
             android:textColorHint="@color/caption"
-            android:textSize="14sp"
-            tools:text="Hello" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 </layout>
