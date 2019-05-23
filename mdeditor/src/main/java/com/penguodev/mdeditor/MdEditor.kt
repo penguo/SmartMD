@@ -5,13 +5,15 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleOwner
 import com.penguodev.mdeditor.components.MdComponent
-import com.penguodev.mdeditor.components.TextComponent
+import com.penguodev.mdeditor.components.MdTextComponent
 import com.penguodev.mdeditor.databinding.ItemComponentEditBinding
 import com.penguodev.mdeditor.databinding.ItemComponentTextBinding
 
@@ -25,14 +27,30 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
 
     var adapter: MdEditorAdapter? = MdEditorAdapter(this)
 
+    private var mLifeCycleOwner: LifecycleOwner? = null
+    fun setLifecycleOwner(lifecycleOwner: LifecycleOwner) {
+        mLifeCycleOwner = lifecycleOwner
+    }
+
     @SuppressLint("InflateParams")
-    fun getTextComponentView(mdComponent: TextComponent) =
+    fun getTextComponentView(mdComponent: MdTextComponent) =
         DataBindingUtil.inflate<ItemComponentTextBinding>(
             LayoutInflater.from(context),
             R.layout.item_component_text,
             null,
             false
-        ).apply { item = mdComponent }
+        ).apply {
+            lifecycleOwner = mLifeCycleOwner
+            item = mdComponent
+            this.text.textSize = 80f
+            this.text.setOnXYClickListener { view, touchX, touchY ->
+                if (touchX == null || touchY == null) return@setOnXYClickListener
+                val position = view.getPreciseOffset(touchX.toInt(), touchY.toInt())
+                val line = this@MdEditor.indexOfChild(this.root)
+                Log.d("Click", "line: $line, posiion: $position")
+                adapter?.setCurrentIndex(this@MdEditor.indexOfChild(this.root), position)
+            }
+        }
 
     val editView = DataBindingUtil.inflate<ItemComponentEditBinding>(
         LayoutInflater.from(context),
@@ -40,14 +58,15 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
         null,
         false
     ).apply {
+        lifecycleOwner = mLifeCycleOwner
         adapter?.initEditText(editText)
     }
 
     fun notifyItemAdded(index: Int) {
-        val item = adapter?.getItemList()?.get(index)
+        val item = adapter?.getItem(index)
         addView(
             when (item) {
-                is TextComponent -> {
+                is MdTextComponent -> {
                     getTextComponentView(item).root
                 }
                 else -> return
@@ -64,8 +83,8 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
         adapter?.getItemList()?.forEachIndexed { index, mdComponent ->
             addView(
                 when (mdComponent) {
-                    is TextComponent -> {
-                        if (index == adapter?.getCurrentPosition()) {
+                    is MdTextComponent -> {
+                        if (index == adapter?.getCurrentIndex()) {
                             editView.apply { item = mdComponent }
                         } else {
                             getTextComponentView(mdComponent)
@@ -77,18 +96,38 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
         }
     }
 
+    // TODO
+    fun notifyItemRangedAdded(start: Int, end: Int) {
+        for (i in start..end) {
+            notifyItemAdded(i)
+        }
+    }
+
+    // TODO
+    fun notifyCurrentIndexChanged(oldIndex: Int, newIndex: Int) {
+        notifyDataSetChanged()
+//        notifyItemRangedAdded()
+//        detachViewFromParent(oldIndex)
+//        notifyItemAdded(oldIndex)
+//        val newItem = adapter?.getItem(newIndex)
+//        attachViewToParent(
+//            when (newItem) {
+//                is MdTextComponent -> {
+//                    editView.apply { item = newItem }
+//                }
+//                else -> return
+//            }.root, newIndex, null
+//        )
+    }
 }
 
 open class MdEditorAdapter(private val mdEditor: MdEditor) {
     private val itemList = mutableListOf<MdComponent>()
-    private var currentPosition = 0
+    private var currentIndex = 0
     private val mdTextWatcher = MdTextWatcher()
 
     init {
-        itemList.add(TextComponent("Hello", null, null))
-        itemList.add(TextComponent("23232", null, null))
-        itemList.add(TextComponent("5555", null, null))
-        itemList.add(TextComponent("Bye!", null, null))
+        itemList.add(MdTextComponent(""))
     }
 
     fun initEditText(editText: EditText) {
@@ -104,18 +143,16 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
 
     fun getItemList(): List<MdComponent> = itemList
 
-    fun getCurrentPosition(): Int = currentPosition
+    fun getCurrentIndex(): Int = currentIndex
 
     fun getItem(index: Int): MdComponent {
-        return itemList[index].apply {
-            if (index == currentPosition) {
-                when (this) {
-                    is TextComponent -> {
-                        text = mdEditor.editView.editText.text.toString()
-                    }
-                }
-            }
-        }
+        return itemList[index]
+    }
+
+    fun getCurrentIndexItem() = getItem(currentIndex)
+
+    fun setItem(index: Int, item: MdComponent) {
+        itemList[index] = item
     }
 
     fun addItem(index: Int, mdComponent: MdComponent) {
@@ -128,23 +165,22 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         mdEditor.notifyItemRemoved(index)
     }
 
-    // inner logic
     private fun enter() {
         val texts = mdEditor.editView.editText.text.toString().split("\n")
         texts.forEachIndexed { index, s ->
             if (index != texts.size - 1) {
-                addItem(currentPosition, TextComponent(s, null, null))
-                currentPosition++
+                addItem(currentIndex, MdTextComponent(s))
+                currentIndex++
             } else {
-                setCurrentPosition(TextComponent(s, null, null), 0)
+                updateCurrentIndex(MdTextComponent(s), 0)
             }
         }
     }
 
-    fun setCurrentPosition(item: MdComponent, selection: Int?) {
-        itemList[currentPosition] = item
+    fun updateCurrentIndex(item: MdComponent, selection: Int?) {
+        setItem(currentIndex, item)
         when (item) {
-            is TextComponent -> {
+            is MdTextComponent -> {
                 mdEditor.editView.run {
                     this.item = item
                     this.executePendingBindings()
@@ -154,18 +190,34 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         }
     }
 
+    fun setCurrentIndex(index: Int, selection: Int?) {
+        val oldIndex = currentIndex
+        currentIndex = index
+        mdEditor.notifyCurrentIndexChanged(oldIndex, currentIndex)
+        val item = getItem(currentIndex)
+        when (item) {
+            is MdTextComponent -> {
+                mdEditor.editView.run {
+                    executePendingBindings()
+                    editText.setSelection(selection ?: item.text.length)
+                }
+            }
+        }
+    }
+
     private fun onDelPressed() {
-        if (mdEditor.editView.editText.selectionStart == 0 && currentPosition > 0) {
-            val currentItem = getItem(currentPosition)
-            val prevItem = getItem(currentPosition - 1)
+        if (mdEditor.editView.editText.selectionStart == 0 && currentIndex > 0) {
+            val currentItem = getItem(currentIndex)
+            val prevItem = getItem(currentIndex - 1)
             when {
-                currentItem is TextComponent
-                        && prevItem is TextComponent -> {
+                currentItem is MdTextComponent
+                        && prevItem is MdTextComponent -> {
+                    currentItem.text = mdEditor.editView.editText.text.toString()
                     val keepSelection = prevItem.text.length
                     prevItem.text += currentItem.text
-                    mdEditor.notifyItemRemoved(currentPosition - 1)
-                    setCurrentPosition(prevItem, keepSelection)
-                    currentPosition--
+                    removeItem(currentIndex - 1)
+                    currentIndex--
+                    updateCurrentIndex(prevItem, keepSelection)
                 }
             }
         }

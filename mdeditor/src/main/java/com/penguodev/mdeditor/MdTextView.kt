@@ -3,8 +3,12 @@ package com.penguodev.mdeditor
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
+import android.widget.EditText
 import android.widget.TextView
+import androidx.databinding.BindingAdapter
+import com.penguodev.mdeditor.components.MdTextHeader
 
 
 class MdTextView @JvmOverloads constructor(
@@ -12,6 +16,26 @@ class MdTextView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = android.R.attr.textViewStyle
 ) : TextView(context, attrs, defStyleAttr) {
+
+    companion object {
+        @JvmStatic
+        @BindingAdapter("mdHeader")
+        fun setMdHeader(view: MdTextView, header: MdTextHeader?) {
+            (header ?: MdTextHeader.NORMAL).let {
+                view.textSize = it.textSizeSP.toFloat()
+                view.setTypeface(null, it.textStyle)
+            }
+        }
+
+        @JvmStatic
+        @BindingAdapter("mdHeader")
+        fun setMdHeader(view: EditText, header: MdTextHeader?) {
+            (header ?: MdTextHeader.NORMAL).let {
+                view.textSize = it.textSizeSP.toFloat()
+                view.setTypeface(null, it.textStyle)
+            }
+        }
+    }
 
     private var touchX: Float? = null
     private var touchY: Float? = null

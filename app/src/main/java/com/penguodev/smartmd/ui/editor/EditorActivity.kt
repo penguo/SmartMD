@@ -38,6 +38,7 @@ class EditorActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.clickHandler = ClickHandler()
 
+        binding.mdEditor.setLifecycleOwner(this)
         binding.mdEditor.notifyDataSetChanged()
 
 //        binding.mdEditor.configureEditor(
