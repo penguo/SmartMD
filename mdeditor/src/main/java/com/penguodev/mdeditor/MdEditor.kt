@@ -180,7 +180,8 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         val item = getItem(currentIndex)
         when (item) {
             is MdTextComponent -> {
-                item.text += text + rearText
+                item.text += text
+                if(rearText != null) item.text += rearText
                 updateCurrentIndex(item, keepSelection)
             }
         }
