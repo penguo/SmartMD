@@ -10,16 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.penguodev.mdeditor.MdEditorAdapter
 import com.penguodev.smartmd.R
-import com.penguodev.smartmd.databinding.ActivityEditor2Binding
 import com.penguodev.smartmd.databinding.ActivityEditorBinding
 import com.penguodev.smartmd.model.ItemDocument
 import com.penguodev.smartmd.repository.MDDatabase
+import com.penguodev.smartmd.ui.editor.toolbar.ToolbarExpert
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import xute.markdeditor.EditorControlBar
-import xute.markdeditor.Styles.TextComponentStyle.NORMAL
 
 class EditorActivity : AppCompatActivity() {
     companion object {
@@ -38,27 +36,12 @@ class EditorActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.clickHandler = ClickHandler()
 
+//        val documentId = intent.getLongExtra("documentId", -1)
+
         binding.mdEditor.setLifecycleOwner(this)
         binding.mdEditor.notifyDataSetChanged()
 
-//        binding.mdEditor.configureEditor(
-//            "",
-//            "",
-//            false,
-//            "Input Here...",
-//            NORMAL
-//        )
-//        binding.controlBar.setEditor(binding.mdEditor)
-//        binding.controlBar.setEditorControlListener(object: EditorControlBar.EditorControlListener{
-//            override fun onInsertImageClicked() {
-//                Toast.makeText(this@EditorActivity, getString(R.string.unsupported), Toast.LENGTH_SHORT).show()
-//            }
-//
-//            override fun onInsertLinkClicked() {
-//                Toast.makeText(this@EditorActivity, getString(R.string.unsupported), Toast.LENGTH_SHORT).show()
-//            }
-//
-//        })
+        ToolbarExpert(this, binding.mdEditor, binding.editorSectionToolbar)
     }
 
     inner class ClickHandler {
@@ -70,20 +53,20 @@ class EditorActivity : AppCompatActivity() {
 
     private fun saveAndFinish() {
         GlobalScope.launch(Dispatchers.Main) {
-            //            withContext(Dispatchers.Default) {
-//                val currentTime = System.currentTimeMillis()
-//                ItemDocument(
-//                    null,
-//                    "TEST $currentTime",
-//                    binding.mdEditor.draft.toJson(),
-//                    currentTime,
-//                    currentTime
-//                ).let {
-//                    MDDatabase.instance.documentDao.submit(it)
-//                }
-//            }
-//            setResult(Activity.RESULT_OK)
-//            finish()
+            withContext(Dispatchers.Default) {
+                val currentTime = System.currentTimeMillis()
+                ItemDocument(
+                    null,
+                    "TEST $currentTime",
+                    binding.mdEditor.getContent() ?: "",
+                    currentTime,
+                    currentTime
+                ).let {
+                    MDDatabase.instance.documentDao.submit(it)
+                }
+            }
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 }

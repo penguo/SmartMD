@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="clickHandler"
+            type="com.penguodev.smartmd.ui.editor.toolbar.ToolbarExpert.ClickHandler" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
+            android:gravity="center"
+            android:onClick="@{(view) -> clickHandler.onClickPound(view)}"
+            android:text="#"
+            android:textColor="@color/white"
+            android:textSize="@dimen/quick_text_size" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <TextView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
+            android:gravity="center"
+            android:onClick="@{(view) -> clickHandler.onClickStar(view)}"
+            android:text="*"
+            android:textColor="@color/white"
+            android:textSize="@dimen/quick_text_size" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <TextView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
+            android:gravity="center"
+            android:onClick="@{(view) -> clickHandler.onClickTilde(view)}"
+            android:text="~"
+            android:textColor="@color/white"
+            android:textSize="@dimen/quick_text_size" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <TextView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
+            android:gravity="center"
+            android:onClick="@{(view) -> clickHandler.onClickSB(view)}"
+            android:text="[ ]"
+            android:textColor="@color/white"
+            android:textSize="@dimen/quick_text_size" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <TextView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
+            android:gravity="center"
+            android:onClick="@{(view) -> clickHandler.onClickParentheses(view)}"
+            android:text="( )"
+            android:textColor="@color/white"
+            android:textSize="@dimen/quick_text_size" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <TextView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
+            android:gravity="center"
+            android:onClick="@{(view) -> clickHandler.onClickPB(view)}"
+            android:text=">"
+            android:textColor="@color/white"
+            android:textSize="@dimen/quick_text_size" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/quick_icon_size"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="@dimen/quick_text_size" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <ImageView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
+            android:padding="10dp"
+            android:src="@drawable/image" />
+    </LinearLayout>
+</layout>

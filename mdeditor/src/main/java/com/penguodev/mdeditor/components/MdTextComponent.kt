@@ -8,9 +8,6 @@ import android.text.style.StyleSpan
 import android.util.Log
 import java.util.regex.Pattern
 
-interface MdComponent {
-
-}
 
 data class MdTextComponent(var text: String) :
     MdComponent {

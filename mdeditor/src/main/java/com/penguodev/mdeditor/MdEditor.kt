@@ -26,6 +26,7 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
     }
 
     var adapter: MdEditorAdapter? = MdEditorAdapter(this)
+    var editable: Boolean = true
 
     private var mLifeCycleOwner: LifecycleOwner? = null
     fun setLifecycleOwner(lifecycleOwner: LifecycleOwner) {
@@ -42,13 +43,14 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
         ).apply {
             lifecycleOwner = mLifeCycleOwner
             item = mdComponent
-            this.text.textSize = 80f
-            this.text.setOnXYClickListener { view, touchX, touchY ->
-                if (touchX == null || touchY == null) return@setOnXYClickListener
-                val position = view.getPreciseOffset(touchX.toInt(), touchY.toInt())
-                val line = this@MdEditor.indexOfChild(this.root)
-                Log.d("Click", "line: $line, posiion: $position")
-                adapter?.setCurrentIndex(this@MdEditor.indexOfChild(this.root), position)
+            if (editable) {
+                this.text.setOnXYClickListener { view, touchX, touchY ->
+                    if (touchX == null || touchY == null) return@setOnXYClickListener
+                    val position = view.getPreciseOffset(touchX.toInt(), touchY.toInt())
+                    val line = this@MdEditor.indexOfChild(this.root)
+                    Log.d("Click", "line: $line, posiion: $position")
+                    adapter?.setCurrentIndex(this@MdEditor.indexOfChild(this.root), position)
+                }
             }
         }
 
@@ -60,6 +62,21 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
     ).apply {
         lifecycleOwner = mLifeCycleOwner
         adapter?.initEditText(editText)
+    }
+
+    fun getContent(): String = StringBuilder().apply {
+        adapter?.getItemList()?.forEachIndexed { index, mdComponent ->
+            if (index != 0) append("\n")
+            when (mdComponent) {
+                is MdTextComponent -> {
+                    append(mdComponent.text)
+                }
+            }
+        }
+    }.toString()
+
+    fun setContent(text: String) {
+        adapter?.setContent(text)
     }
 
     fun notifyItemAdded(index: Int) {
@@ -84,7 +101,7 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
             addView(
                 when (mdComponent) {
                     is MdTextComponent -> {
-                        if (index == adapter?.getCurrentIndex()) {
+                        if (index == adapter?.getCurrentIndex() && editable) {
                             editView.apply { item = mdComponent }
                         } else {
                             getTextComponentView(mdComponent)
@@ -141,6 +158,14 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         }
     }
 
+    fun setContent(text: String) {
+        itemList.clear()
+        text.split("\n").forEach {
+            itemList.add(MdComponent.getMdComponent(it))
+        }
+        mdEditor.notifyDataSetChanged()
+    }
+
     fun getItemList(): List<MdComponent> = itemList
 
     fun getCurrentIndex(): Int = currentIndex
@@ -149,7 +174,27 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         return itemList[index]
     }
 
-    fun getCurrentIndexItem() = getItem(currentIndex)
+    fun addCurrentItemText(text: String, rearText: String? = null) {
+        val keepSelection = mdEditor.editView.editText.selectionStart + text.length
+        updateCurrentIndexItem()
+        val item = getItem(currentIndex)
+        when (item) {
+            is MdTextComponent -> {
+                item.text += text + rearText
+                updateCurrentIndex(item, keepSelection)
+            }
+        }
+    }
+
+    fun updateCurrentIndexItem() {
+        val currentItem = getItem(currentIndex)
+        when (currentItem) {
+            is MdTextComponent -> {
+                currentItem.text = mdEditor.editView.editText.text.toString()
+            }
+        }
+        setItem(currentIndex, currentItem)
+    }
 
     fun setItem(index: Int, item: MdComponent) {
         itemList[index] = item
@@ -191,6 +236,7 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
     }
 
     fun setCurrentIndex(index: Int, selection: Int?) {
+        updateCurrentIndexItem()
         val oldIndex = currentIndex
         currentIndex = index
         mdEditor.notifyCurrentIndexChanged(oldIndex, currentIndex)
@@ -212,7 +258,7 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
             when {
                 currentItem is MdTextComponent
                         && prevItem is MdTextComponent -> {
-                    currentItem.text = mdEditor.editView.editText.text.toString()
+                    updateCurrentIndexItem()
                     val keepSelection = prevItem.text.length
                     prevItem.text += currentItem.text
                     removeItem(currentIndex - 1)

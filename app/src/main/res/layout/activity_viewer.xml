@@ -73,17 +73,11 @@
             android:background="@color/white"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-            <xute.markdeditor.MarkDEditor
+            <com.penguodev.mdeditor.MdEditor
                 android:id="@+id/mdEditor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </ScrollView>
-
-        <TextView
-            android:id="@+id/viewer_tv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

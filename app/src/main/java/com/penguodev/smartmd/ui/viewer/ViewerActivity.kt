@@ -16,13 +16,8 @@ import androidx.lifecycle.ViewModelProviders
 import com.penguodev.smartmd.MDApplication.Companion.RC_VIEWER_TO_EDITOR
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ActivityViewerBinding
-import com.penguodev.smartmd.model.ItemDocument
 import com.penguodev.smartmd.repository.MDDatabase
 import com.penguodev.smartmd.ui.editor.EditorActivity
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import xute.markdeditor.Styles.TextComponentStyle
-import xute.markdeditor.models.DraftModel
 
 class ViewerActivity : AppCompatActivity() {
 
@@ -50,16 +45,10 @@ class ViewerActivity : AppCompatActivity() {
             .get(ViewerViewModel::class.java)
             .apply {
                 item.observe(this@ViewerActivity, Observer {
-                    binding.viewerTv.text = it.text
+                    binding.mdEditor.editable = false
+                    binding.mdEditor.setContent(it.text)
                 })
             }
-        binding.mdEditor.configureEditor(
-            "",
-            "",
-            true,
-            "No Data",
-            TextComponentStyle.NORMAL
-        )
     }
 
     inner class ClickHandler {
