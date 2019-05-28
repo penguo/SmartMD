@@ -45,22 +45,19 @@ data class MdTextComponent(var text: String) :
     ).apply {
         MdGrammer.values().forEach {
             if (this.contains(it.regex)) {
-                this.applyRegex(it.regex, it.span)
+                this.applyRegex(it, it.span)
             }
         }
     }
 
-    private fun SpannableStringBuilder.applyRegex(regex: Regex, span: Any) {
-        val match = regex.toPattern().matcher(this)
+    private fun SpannableStringBuilder.applyRegex(mdGrammer: MdGrammer, span: Any) {
+        val match = mdGrammer.regex.toPattern().matcher(this)
 
         var start: Pair<Int, Int>? = null
-        var regexLength = 0
+        val regexLength = mdGrammer.grammer.length
         while (match.find()) {
             if (start == null) {
                 start = match.start() to match.end()
-                if (regexLength == 0) {
-                    regexLength = match.end() - match.start()
-                }
             } else {
                 Log.d("match", "${start.first} ~ ${match.end()}")
                 replace(start.first, start.second, getZeroWidthSpace(regexLength))

@@ -3,6 +3,7 @@ package com.penguodev.mdeditor
 import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
+import android.text.Spanned
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.Log
@@ -13,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.penguodev.mdeditor.components.MdComponent
+import com.penguodev.mdeditor.components.MdGrammer
 import com.penguodev.mdeditor.components.MdTextComponent
 import com.penguodev.mdeditor.databinding.ItemComponentEditBinding
 import com.penguodev.mdeditor.databinding.ItemComponentTextBinding
@@ -288,9 +290,33 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
     }
 
     inner class MdTextWatcher : TextWatcher {
-        override fun afterTextChanged(s: Editable?) {
-            if (s?.contains("\n") == true) {
+        override fun afterTextChanged(editable: Editable?) {
+            Log.d("afterTextChanged", "Called! : $editable")
+            if (editable == null) return
+            if (editable.contains("\n")) {
                 enter()
+                return
+            }
+            val before = editable.toString()
+
+            // BOLD
+            MdGrammer.values().forEach {
+                val match = it.regex.toPattern().matcher(editable)
+
+                var start: Int? = null
+                var regexLength = 0
+                while (match.find()) {
+                    if (start == null) {
+                        start = match.start()
+                        if (regexLength == 0) {
+                            regexLength = match.end() - match.start()
+                        }
+                    } else {
+                        Log.d("match", "$start ~ ${match.end()}")
+                        editable.setSpan(it.span, start, match.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        start = null
+                    }
+                }
             }
         }
 
