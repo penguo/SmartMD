@@ -174,16 +174,33 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         return itemList[index]
     }
 
-    fun addCurrentItemText(text: String, rearText: String? = null) {
-        val keepSelection = mdEditor.editView.editText.selectionStart + text.length
-        updateCurrentIndexItem()
-        val item = getItem(currentIndex)
-        when (item) {
-            is MdTextComponent -> {
-                item.text += text
-                if(rearText != null) item.text += rearText
-                updateCurrentIndex(item, keepSelection)
+    fun addCurrentItemText(frontInput: String, rearInput: String? = null) {
+        mdEditor.editView.editText.run {
+            val keepSelection = getSelection()
+            text.insert(keepSelection.first, frontInput)
+            rearInput?.let {
+                text.insert(keepSelection.second + frontInput.length, it)
             }
+            setSelection(
+                keepSelection.first + frontInput.length,
+                keepSelection.second + frontInput.length
+            )
+        }
+    }
+
+    fun addCurrentItemTextPrefix(prefix: String) {
+        mdEditor.editView.editText.run {
+            val keepSelection = getSelection()
+            text.insert(0, prefix)
+            setSelection(keepSelection.first + prefix.length, keepSelection.second + prefix.length)
+        }
+    }
+
+    fun removeCurrentItemTextPrefix(prefix: String) {
+        mdEditor.editView.editText.run {
+            val keepSelection = getSelection()
+            text.removePrefix(prefix)
+            setSelection(keepSelection.first - prefix.length, keepSelection.second - prefix.length)
         }
     }
 

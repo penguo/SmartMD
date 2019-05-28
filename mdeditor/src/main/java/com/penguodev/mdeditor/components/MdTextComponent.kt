@@ -1,12 +1,8 @@
 package com.penguodev.mdeditor.components
 
-import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.style.StrikethroughSpan
-import android.text.style.StyleSpan
 import android.util.Log
-import java.util.regex.Pattern
 
 
 data class MdTextComponent(var text: String) :
@@ -47,7 +43,7 @@ data class MdTextComponent(var text: String) :
             text
         }
     ).apply {
-        MdContent.values().forEach {
+        MdGrammer.values().forEach {
             if (this.contains(it.regex)) {
                 this.applyRegex(it.regex, it.span)
             }
@@ -84,14 +80,4 @@ data class MdTextComponent(var text: String) :
             }
         }.toString()
     }
-}
-
-enum class MdContent(var regex: Regex, var span: Any) {
-    BoldItalic(Regex("\\*{3}"), StyleSpan(Typeface.BOLD_ITALIC)),
-    BoldItalic2(Regex("_{3}"), StyleSpan(Typeface.BOLD_ITALIC)),
-    Bold(Regex("\\*{2}"), StyleSpan(Typeface.BOLD)),
-    Bold2(Regex("_{2}"), StyleSpan(Typeface.BOLD)),
-    Italic(Regex("\\*"), StyleSpan(Typeface.ITALIC)),
-    Italic2(Regex("_"), StyleSpan(Typeface.ITALIC)),
-    Strikethrough(Regex("~{2}"), StrikethroughSpan());
 }

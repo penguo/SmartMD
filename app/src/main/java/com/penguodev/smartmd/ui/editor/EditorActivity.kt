@@ -5,15 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.penguodev.mdeditor.MdEditorAdapter
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ActivityEditorBinding
 import com.penguodev.smartmd.model.ItemDocument
 import com.penguodev.smartmd.repository.MDDatabase
-import com.penguodev.smartmd.ui.editor.toolbar.ToolbarExpert
+import com.penguodev.smartmd.ui.editor.toolbar.ToolbarManager
+import com.penguodev.smartmd.ui.editor.toolbar.ToolbarType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,12 +35,14 @@ class EditorActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.clickHandler = ClickHandler()
 
-//        val documentId = intent.getLongExtra("documentId", -1)
+        val documentId = intent.getLongExtra("documentId", -1)
 
         binding.mdEditor.setLifecycleOwner(this)
         binding.mdEditor.notifyDataSetChanged()
 
-        ToolbarExpert(this, binding.mdEditor, binding.editorSectionToolbar)
+        ToolbarManager(this, binding.mdEditor, binding.editorSectionToolbar).apply {
+            attachToolbar(ToolbarType.EXPERT)
+        }
     }
 
     inner class ClickHandler {
@@ -58,7 +59,7 @@ class EditorActivity : AppCompatActivity() {
                 ItemDocument(
                     null,
                     "TEST $currentTime",
-                    binding.mdEditor.getContent() ?: "",
+                    binding.mdEditor.getContent(),
                     currentTime,
                     currentTime
                 ).let {

@@ -2,5 +2,7 @@
 <resources>
     <dimen name="quick_icon_size">40dp</dimen>
     <dimen name="quick_text_size">21sp</dimen>
+    <dimen name="quick_icon_padding">6dp</dimen>
+    <dimen name="divider">1dp</dimen>
 
 </resources>

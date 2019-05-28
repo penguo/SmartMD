@@ -11,19 +11,19 @@ import com.penguodev.mdeditor.components.MdTextComponent
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ToolbarExpertBinding
 
-class ToolbarExpert(lifecycleOwner: LifecycleOwner, private val mdEditor: MdEditor, viewGroup: ViewGroup) {
-    private val binding = DataBindingUtil.inflate<ToolbarExpertBinding>(
+class ToolbarExpert(lifecycleOwner: LifecycleOwner, private val mdEditor: MdEditor, viewGroup: ViewGroup) :
+    ToolbarBase(viewGroup) {
+
+    override val type: ToolbarType = ToolbarType.EXPERT
+
+    override val binding = DataBindingUtil.inflate<ToolbarExpertBinding>(
         LayoutInflater.from(viewGroup.context),
         R.layout.toolbar_expert,
-        null,
+        viewGroup,
         false
     ).apply {
         setLifecycleOwner(lifecycleOwner)
         clickHandler = ClickHandler()
-    }
-
-    init {
-        viewGroup.addView(binding.root)
     }
 
     inner class ClickHandler {
@@ -42,9 +42,11 @@ class ToolbarExpert(lifecycleOwner: LifecycleOwner, private val mdEditor: MdEdit
         fun onClickSB(view: View) {
             mdEditor.adapter?.addCurrentItemText("[", "]")
         }
+
         fun onClickParentheses(view: View) {
             mdEditor.adapter?.addCurrentItemText("(", ")")
         }
+
         fun onClickPB(view: View) {
             mdEditor.adapter?.addCurrentItemText(">")
         }
