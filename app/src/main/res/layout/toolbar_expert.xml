@@ -119,7 +119,8 @@
         <ImageView
             android:layout_width="@dimen/quick_icon_size"
             android:layout_height="@dimen/quick_icon_size"
-            android:padding="10dp"
-            android:src="@drawable/image" />
+            android:onClick="@{(view) -> clickHandler.onClickSwap(view)}"
+            android:padding="@dimen/quick_icon_padding"
+            android:src="@drawable/ic_swap" />
     </LinearLayout>
 </layout>

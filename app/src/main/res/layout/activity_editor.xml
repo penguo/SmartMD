@@ -86,11 +86,10 @@
                     android:layout_height="match_parent" />
             </ScrollView>
 
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/editor_section_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
+                android:layout_height="@dimen/quick_icon_size"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent" />
 

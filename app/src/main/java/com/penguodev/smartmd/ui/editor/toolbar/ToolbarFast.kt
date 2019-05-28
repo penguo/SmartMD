@@ -1,36 +1,32 @@
 package com.penguodev.smartmd.ui.editor.toolbar
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
-import com.penguodev.mdeditor.MdEditor
 import com.penguodev.mdeditor.components.MdGrammer
 import com.penguodev.mdeditor.components.MdTextComponent
 import com.penguodev.mdeditor.components.MdTextHeader
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ToolbarFastBinding
 
-class ToolbarFast(lifecycleOwner: LifecycleOwner, private val mdEditor: MdEditor, viewGroup: ViewGroup) :
-    ToolbarBase(viewGroup) {
+class ToolbarFast(private val tManager: ToolbarManager) :
+    ToolbarBase(tManager.viewGroup) {
 
     override val type: ToolbarType = ToolbarType.FAST
 
     override val binding = DataBindingUtil.inflate<ToolbarFastBinding>(
-        LayoutInflater.from(viewGroup.context),
+        LayoutInflater.from(tManager.viewGroup.context),
         R.layout.toolbar_fast,
-        viewGroup,
+        tManager.viewGroup,
         false
     ).apply {
-        setLifecycleOwner(lifecycleOwner)
+        lifecycleOwner = tManager.lifecycleOwner
         clickHandler = ClickHandler()
     }
 
     inner class ClickHandler {
         fun onClickHeader(view: View) {
-            mdEditor.adapter?.run {
+            tManager.mdEditor.adapter?.run {
                 (getItem(getCurrentIndex()) as? MdTextComponent)?.let {
                     when (it.getHeader()) {
                         MdTextHeader.NORMAL -> addCurrentItemTextPrefix("# ")
@@ -45,26 +41,29 @@ class ToolbarFast(lifecycleOwner: LifecycleOwner, private val mdEditor: MdEditor
 
         fun onClickBold(view: View) {
             val grammer = MdGrammer.Bold.grammer
-            mdEditor.adapter?.addCurrentItemText(grammer, grammer)
+            tManager.mdEditor.adapter?.addCurrentItemText(grammer, grammer)
         }
 
         fun onClickItalic(view: View) {
             val grammer = MdGrammer.Italic.grammer
-            mdEditor.adapter?.addCurrentItemText(grammer, grammer)
+            tManager.mdEditor.adapter?.addCurrentItemText(grammer, grammer)
         }
 
         fun onClickStrikethrough(view: View) {
             val grammer = MdGrammer.Strikethrough.grammer
-            mdEditor.adapter?.addCurrentItemText(grammer, grammer)
+            tManager.mdEditor.adapter?.addCurrentItemText(grammer, grammer)
         }
 
         fun onClickBullet(view: View) {
-            mdEditor.adapter?.addCurrentItemTextPrefix("* ")
+            tManager.mdEditor.adapter?.addCurrentItemTextPrefix("* ")
         }
 
         fun onClickNumber(view: View) {
-            mdEditor.adapter?.addCurrentItemTextPrefix("1. ")
+            tManager.mdEditor.adapter?.addCurrentItemTextPrefix("1. ")
         }
 
+        fun onClickSwap(view: View) {
+            tManager.swapToolbar()
+        }
     }
 }

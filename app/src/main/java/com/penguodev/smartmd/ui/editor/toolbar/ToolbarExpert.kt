@@ -11,44 +11,48 @@ import com.penguodev.mdeditor.components.MdTextComponent
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ToolbarExpertBinding
 
-class ToolbarExpert(lifecycleOwner: LifecycleOwner, private val mdEditor: MdEditor, viewGroup: ViewGroup) :
-    ToolbarBase(viewGroup) {
+class ToolbarExpert(private val tManager: ToolbarManager) :
+    ToolbarBase(tManager.viewGroup) {
 
     override val type: ToolbarType = ToolbarType.EXPERT
 
     override val binding = DataBindingUtil.inflate<ToolbarExpertBinding>(
-        LayoutInflater.from(viewGroup.context),
+        LayoutInflater.from(tManager.viewGroup.context),
         R.layout.toolbar_expert,
-        viewGroup,
+        tManager.viewGroup,
         false
     ).apply {
-        setLifecycleOwner(lifecycleOwner)
+        lifecycleOwner = tManager.lifecycleOwner
         clickHandler = ClickHandler()
     }
 
     inner class ClickHandler {
         fun onClickPound(view: View) {
-            mdEditor.adapter?.addCurrentItemText("#")
+            tManager.mdEditor.adapter?.addCurrentItemText("#")
         }
 
         fun onClickStar(view: View) {
-            mdEditor.adapter?.addCurrentItemText("*")
+            tManager.mdEditor.adapter?.addCurrentItemText("*")
         }
 
         fun onClickTilde(view: View) {
-            mdEditor.adapter?.addCurrentItemText("~")
+            tManager.mdEditor.adapter?.addCurrentItemText("~")
         }
 
         fun onClickSB(view: View) {
-            mdEditor.adapter?.addCurrentItemText("[", "]")
+            tManager.mdEditor.adapter?.addCurrentItemText("[", "]")
         }
 
         fun onClickParentheses(view: View) {
-            mdEditor.adapter?.addCurrentItemText("(", ")")
+            tManager.mdEditor.adapter?.addCurrentItemText("(", ")")
         }
 
         fun onClickPB(view: View) {
-            mdEditor.adapter?.addCurrentItemText(">")
+            tManager.mdEditor.adapter?.addCurrentItemText(">")
+        }
+
+        fun onClickSwap(view: View) {
+            tManager.swapToolbar()
         }
     }
 }

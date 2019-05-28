@@ -41,7 +41,7 @@ class EditorActivity : AppCompatActivity() {
         binding.mdEditor.notifyDataSetChanged()
 
         ToolbarManager(this, binding.mdEditor, binding.editorSectionToolbar).apply {
-            attachToolbar(ToolbarType.EXPERT)
+            attachToolbar(ToolbarType.FAST)
         }
     }
 
