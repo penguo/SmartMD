@@ -15,12 +15,9 @@ import com.penguodev.smartmd.model.ItemDocument
 import com.penguodev.smartmd.repository.MDDatabase
 import com.penguodev.smartmd.ui.editor.toolbar.ToolbarManager
 import com.penguodev.smartmd.ui.editor.toolbar.ToolbarType
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import android.widget.Toast
 import com.penguodev.smartmd.common.ComfyUtil
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 
@@ -41,10 +38,24 @@ class EditorActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.clickHandler = ClickHandler()
 
-        val documentId = intent.getLongExtra("documentId", -1)
-
         binding.mdEditor.setLifecycleOwner(this)
-        binding.mdEditor.notifyDataSetChanged()
+
+        val documentId = intent.getLongExtra("documentId", -1)
+        if (documentId == -1L) {
+            binding.mdEditor.notifyDataSetChanged()
+        } else {
+            GlobalScope.launch(Dispatchers.Main) {
+                withContext(Dispatchers.Default) {
+                    MDDatabase.instance.documentDao.getItem(documentId)
+                }.let {
+                    if (it == null) {
+                        binding.mdEditor.notifyDataSetChanged()
+                    } else {
+                        binding.mdEditor.setContent(it.text)
+                    }
+                }
+            }
+        }
 
         ToolbarManager(this, binding.mdEditor, binding.editorSectionToolbar).apply {
             attachToolbar(ToolbarType.FAST)

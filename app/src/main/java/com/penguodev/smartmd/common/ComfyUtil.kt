@@ -7,7 +7,6 @@ import android.text.Html
 import android.text.Spanned
 import java.io.*
 
-
 object ComfyUtil {
     fun fromHtml(text: String?): Spanned {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
