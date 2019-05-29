@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import com.penguodev.mdeditor.components.MdGrammer
 import com.penguodev.mdeditor.components.MdComponent
+import com.penguodev.mdeditor.components.MdTextHeader
 import com.penguodev.mdeditor.databinding.ItemComponentEditBinding
 import com.penguodev.mdeditor.databinding.ItemComponentTextBinding
 
@@ -157,6 +158,13 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
             itemList.add(MdComponent(it))
         }
         mdEditor.notifyDataSetChanged()
+    }
+
+    fun getHeader(): String {
+        updateCurrentIndexItem()
+        return itemList.find { it.getHeader() == MdTextHeader.H1 }.let {
+            it?.text?.removePrefix("# ") ?: itemList[0].text
+        }
     }
 
     fun getItemList(): List<MdComponent> = itemList

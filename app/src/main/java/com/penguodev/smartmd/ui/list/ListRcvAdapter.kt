@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.TaskStackBuilder
+import androidx.recyclerview.widget.RecyclerView
 import com.penguodev.smartmd.MDApplication.Companion.RC_LIST_TO_EDITOR
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.common.BindingViewHolder
@@ -16,6 +17,7 @@ import com.penguodev.smartmd.ui.editor.EditorActivity
 import com.penguodev.smartmd.ui.viewer.ViewerActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 class ListRcvAdapter : ListAdapter<ItemDocument, BindingViewHolder>(object : DiffUtil.ItemCallback<ItemDocument>() {
     override fun areItemsTheSame(p0: ItemDocument, p1: ItemDocument): Boolean {

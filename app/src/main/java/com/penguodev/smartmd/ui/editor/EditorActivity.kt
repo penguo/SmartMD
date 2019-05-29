@@ -31,6 +31,7 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityEditorBinding
+    private var documentId: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +43,7 @@ class EditorActivity : AppCompatActivity() {
 
         val documentId = intent.getLongExtra("documentId", -1)
         if (documentId == -1L) {
+            this.documentId = null
             binding.mdEditor.notifyDataSetChanged()
         } else {
             GlobalScope.launch(Dispatchers.Main) {
@@ -49,8 +51,10 @@ class EditorActivity : AppCompatActivity() {
                     MDDatabase.instance.documentDao.getItem(documentId)
                 }.let {
                     if (it == null) {
+                        this@EditorActivity.documentId = null
                         binding.mdEditor.notifyDataSetChanged()
                     } else {
+                        this@EditorActivity.documentId = it.id
                         binding.mdEditor.setContent(it.text)
                     }
                 }
@@ -75,8 +79,8 @@ class EditorActivity : AppCompatActivity() {
             withContext(Dispatchers.Default) {
                 val currentTime = System.currentTimeMillis()
                 ItemDocument(
-                    null,
-                    "TEST $currentTime",
+                    documentId,
+                    binding.mdEditor.adapter?.getHeader() ?: "",
                     binding.mdEditor.getContent(),
                     currentTime,
                     currentTime

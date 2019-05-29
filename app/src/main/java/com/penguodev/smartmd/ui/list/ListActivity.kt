@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ActivityListBinding
 import com.penguodev.smartmd.ui.editor.EditorActivity
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 class ListActivity : AppCompatActivity() {
@@ -37,6 +38,12 @@ class ListActivity : AppCompatActivity() {
             itemList.observe(this@ListActivity, Observer {
                 Timber.d("itemListSize: ${it.size}")
                 adapter.submitList(it)
+                GlobalScope.launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Default) {
+                        delay(300)
+                    }
+                    binding.recyclerView.smoothScrollToPosition(0)
+                }
             })
         }
     }
