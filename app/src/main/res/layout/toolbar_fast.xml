@@ -113,6 +113,18 @@
         <ImageView
             android:layout_width="@dimen/quick_icon_size"
             android:layout_height="@dimen/quick_icon_size"
+            android:onClick="@{(view) -> clickHandler.onClickImage(view)}"
+            android:padding="@dimen/quick_icon_padding"
+            android:src="@drawable/ic_image" />
+
+        <View
+            android:layout_width="@dimen/divider"
+            android:layout_height="match_parent"
+            android:background="@color/black_777777" />
+
+        <ImageView
+            android:layout_width="@dimen/quick_icon_size"
+            android:layout_height="@dimen/quick_icon_size"
             android:onClick="@{(view) -> clickHandler.onClickSwap(view)}"
             android:padding="@dimen/quick_icon_padding"
             android:src="@drawable/ic_swap" />

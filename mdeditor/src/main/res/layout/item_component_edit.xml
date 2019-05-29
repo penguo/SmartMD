@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.penguodev.mdeditor.components.MdTextComponent" />
+            type="com.penguodev.mdeditor.components.MdComponent" />
 
     </data>
 

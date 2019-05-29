@@ -11,6 +11,7 @@ class MDApplication : Application() {
 
         const val RC_VIEWER_TO_EDITOR = 1001
         const val RC_LIST_TO_EDITOR = 1002
+        const val RC_PICK_IMAGE = 1003
     }
 
     override fun onCreate() {

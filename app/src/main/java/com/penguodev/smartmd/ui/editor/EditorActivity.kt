@@ -3,10 +3,12 @@ package com.penguodev.smartmd.ui.editor
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.penguodev.smartmd.MDApplication.Companion.RC_PICK_IMAGE
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ActivityEditorBinding
 import com.penguodev.smartmd.model.ItemDocument
@@ -17,6 +19,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.widget.Toast
+import com.penguodev.smartmd.common.ComfyUtil
+import timber.log.Timber
+
 
 class EditorActivity : AppCompatActivity() {
     companion object {
@@ -42,6 +48,7 @@ class EditorActivity : AppCompatActivity() {
 
         ToolbarManager(this, binding.mdEditor, binding.editorSectionToolbar).apply {
             attachToolbar(ToolbarType.FAST)
+            pickImageFunction = ::pickImage
         }
     }
 
@@ -68,6 +75,36 @@ class EditorActivity : AppCompatActivity() {
             }
             setResult(Activity.RESULT_OK)
             finish()
+        }
+    }
+
+    fun pickImage() {
+        Intent().apply {
+            type = "image/*"
+            action = Intent.ACTION_GET_CONTENT
+        }.let {
+            startActivityForResult(Intent.createChooser(it, "Select Picture"), RC_PICK_IMAGE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                RC_PICK_IMAGE -> {
+                    if (data == null || data.data == null) {
+                        Toast.makeText(this@EditorActivity, "오류가 발생했습니다", Toast.LENGTH_SHORT).show()
+                        Timber.e("error occur.")
+                        return
+                    } else {
+                        val uri: Uri = data.data!!
+                        val fileName = uri.toString().split("/").last()
+                        ComfyUtil.savefile(this@EditorActivity, uri).also {
+                            binding.mdEditor.adapter?.addCurrentItemText("![$fileName]($it)")
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package com.penguodev.mdeditor
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -9,6 +10,11 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.penguodev.mdeditor.components.MdTextHeader
+import android.provider.MediaStore.Images.Media.getBitmap
+import android.R.attr.bitmap
+import android.provider.MediaStore
+import android.view.View
+import android.widget.ImageView
 
 
 class MdTextView @JvmOverloads constructor(
@@ -33,6 +39,22 @@ class MdTextView @JvmOverloads constructor(
             (header ?: MdTextHeader.NORMAL).let {
                 view.textSize = it.textSizeSP.toFloat()
                 view.setTypeface(null, it.textStyle)
+            }
+        }
+
+        @JvmStatic
+        @BindingAdapter("mdImage")
+        fun setMdImage(view: ImageView, uri: Uri?) {
+            if (uri == null) {
+                view.visibility = View.GONE
+            } else {
+                view.visibility = View.VISIBLE
+                try {
+                    view.setImageURI(uri)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    view.setImageResource(R.drawable.img_not_found)
+                }
             }
         }
     }

@@ -125,7 +125,6 @@ public class TextComponent {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Log.d("TextComponent", "afterTextChanged called.");
 //                editable.setSpan(new StyleSpan(Typeface.NORMAL), 0, editable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 //                editable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.black_212121)), 0, editable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 String before = editable.toString();

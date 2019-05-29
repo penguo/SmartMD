@@ -1,13 +1,8 @@
 package com.penguodev.smartmd.ui.editor.toolbar
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
-import com.penguodev.mdeditor.MdEditor
-import com.penguodev.mdeditor.components.MdTextComponent
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ToolbarExpertBinding
 
@@ -53,6 +48,10 @@ class ToolbarExpert(private val tManager: ToolbarManager) :
 
         fun onClickSwap(view: View) {
             tManager.swapToolbar()
+        }
+
+        fun onClickImage(view: View){
+            tManager.onClickImage()
         }
     }
 }

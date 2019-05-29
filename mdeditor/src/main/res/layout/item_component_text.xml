@@ -7,43 +7,56 @@
 
         <variable
             name="item"
-            type="com.penguodev.mdeditor.components.MdTextComponent" />
+            type="com.penguodev.mdeditor.components.MdComponent" />
 
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/indicator"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="0dp"
-            android:gravity="center"
-            android:text="1"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:visibility="gone" />
-
-        <com.penguodev.mdeditor.MdTextView
-            android:id="@+id/text"
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="8dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="8dp"
-            android:text="@{item.getSpanned()}"
-            android:textColor="@color/black_212121"
-            android:textColorHint="@color/caption"
-            android:textSize="14sp"
-            app:mdHeader="@{item.getHeader()}"
-            tools:text="Hello" />
+            android:adjustViewBounds="true"
+            android:padding="8dp"
+            app:mdImage="@{item.getImage()}" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/indicator"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="0dp"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <com.penguodev.mdeditor.MdTextView
+                android:id="@+id/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:text="@{item.getSpanned()}"
+                android:textColor="@color/black_212121"
+                android:textColorHint="@color/caption"
+                android:textSize="14sp"
+                app:mdHeader="@{item.getHeader()}"
+                tools:text="Hello" />
+
+        </LinearLayout>
     </LinearLayout>
 </layout>

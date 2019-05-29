@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.penguodev.mdeditor.components.MdGrammer
-import com.penguodev.mdeditor.components.MdTextComponent
+import com.penguodev.mdeditor.components.MdComponent
 import com.penguodev.mdeditor.components.MdTextHeader
 import com.penguodev.smartmd.R
 import com.penguodev.smartmd.databinding.ToolbarFastBinding
@@ -27,7 +27,7 @@ class ToolbarFast(private val tManager: ToolbarManager) :
     inner class ClickHandler {
         fun onClickHeader(view: View) {
             tManager.mdEditor.adapter?.run {
-                (getItem(getCurrentIndex()) as? MdTextComponent)?.let {
+                (getItem(getCurrentIndex()) as? MdComponent)?.let {
                     when (it.getHeader()) {
                         MdTextHeader.NORMAL -> addCurrentItemTextPrefix("# ")
                         MdTextHeader.H1, MdTextHeader.H2,
@@ -64,6 +64,10 @@ class ToolbarFast(private val tManager: ToolbarManager) :
 
         fun onClickSwap(view: View) {
             tManager.swapToolbar()
+        }
+
+        fun onClickImage(view: View){
+            tManager.onClickImage()
         }
     }
 }
