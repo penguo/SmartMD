@@ -18,6 +18,8 @@ import com.penguodev.mdeditor.components.MdComponent
 import com.penguodev.mdeditor.components.MdTextHeader
 import com.penguodev.mdeditor.databinding.ItemComponentEditBinding
 import com.penguodev.mdeditor.databinding.ItemComponentTextBinding
+import com.penguodev.mdeditor.utils.SoftKeyHelper
+import com.penguodev.mdeditor.utils.getSelection
 
 //, int defStyleAttr, int defStyleRes
 class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int = 0) :
@@ -67,6 +69,7 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
     }
 
     fun getContent(): String = StringBuilder().apply {
+        adapter?.updateCurrentIndexItem()
         adapter?.getItemList()?.forEachIndexed { index, mdComponent ->
             if (index != 0) append("\n")
             append(mdComponent.text)
@@ -93,18 +96,25 @@ class MdEditor @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
         removeViewAt(index)
     }
 
-    fun notifyDataSetChanged() {
+    fun notifyDataSetChanged(forceLast: Boolean = false) {
         removeAllViews()
-        adapter?.getItemList()?.forEachIndexed { index, mdComponent ->
-            addView(
-                if (index == adapter?.getCurrentIndex() && editable) {
-                    editView.apply { item = mdComponent }
-                } else {
-                    getTextComponentView(mdComponent)
-                }.root
-                , index
-            )
+        adapter?.run {
+            if (forceLast) {
+                setCurrentIndexForce(getItemSize() - 1)
+            }
+            getItemList().forEachIndexed { index, mdComponent ->
+                addView(
+                    if (index == adapter?.getCurrentIndex() && editable) {
+                        editView.apply { item = mdComponent }
+                    } else {
+                        getTextComponentView(mdComponent)
+                    }.root
+                    , index
+                )
+            }
         }
+
+        SoftKeyHelper.show(editView.editText)
     }
 
     // TODO
@@ -157,7 +167,7 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         text.split("\n").forEach {
             itemList.add(MdComponent(it))
         }
-        mdEditor.notifyDataSetChanged()
+        mdEditor.notifyDataSetChanged(true)
     }
 
     fun getHeader(): String {
@@ -167,9 +177,13 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
         }
     }
 
-    fun getItemList(): List<MdComponent> = itemList
+    fun getItemList(): List<MdComponent> {
+        return itemList
+    }
 
     fun getCurrentIndex(): Int = currentIndex
+
+    fun getItemSize(): Int = itemList.size
 
     fun getItem(index: Int): MdComponent {
         return itemList[index]
@@ -256,6 +270,10 @@ open class MdEditorAdapter(private val mdEditor: MdEditor) {
             executePendingBindings()
             editText.setSelection(selection ?: item.text.length)
         }
+    }
+
+    fun setCurrentIndexForce(value: Int) {
+        currentIndex = value
     }
 
     private fun onDelPressed() {

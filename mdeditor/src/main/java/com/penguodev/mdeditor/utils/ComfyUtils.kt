@@ -1,4 +1,4 @@
-package com.penguodev.mdeditor
+package com.penguodev.mdeditor.utils
 
 import android.view.View
 import android.widget.EditText
@@ -19,3 +19,4 @@ fun setVisibleGone(view: View, visibleGone: Boolean?) {
         View.GONE
     }
 }
+

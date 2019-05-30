@@ -28,39 +28,56 @@ data class MdComponent(var text: String) {
 //        if (text.startsWith("1. ")) mode = TextMode.UL
     }
 
-    fun getSpanned(): Spanned = SpannableStringBuilder(
-        if (text.startsWith("#")) {
-            when {
-                text.startsWith("# ") -> text.replaceFirst("# ", getZeroWidthSpace(2))
-                text.startsWith("## ") -> text.replaceFirst("## ", getZeroWidthSpace(3))
-                text.startsWith("### ") -> text.replaceFirst("### ", getZeroWidthSpace(4))
-                text.startsWith("#### ") -> text.replaceFirst("#### ", getZeroWidthSpace(5))
-                text.startsWith("##### ") -> text.replaceFirst("##### ", getZeroWidthSpace(6))
-                text.startsWith("###### ") -> text.replaceFirst("###### ", getZeroWidthSpace(7))
-                else -> text
-            }
-        } else {
-            text
+    private var tempText: String? = null
+    private var tempSpanned: Spanned? = null
+    fun getSpanned(): Spanned {
+        tempSpanned?.let {
+            if (tempText == text) return it
         }
-    ).apply {
-        MdGrammer.values().forEach {
-            if (this.contains(it.regex)) {
-                this.applyRegex(it, it.span)
+        tempText = text
+        return SpannableStringBuilder(
+            if (text.startsWith("#")) {
+                when {
+                    text.startsWith("# ") -> text.replaceFirst("# ", getZeroWidthSpace(2))
+                    text.startsWith("## ") -> text.replaceFirst("## ", getZeroWidthSpace(3))
+                    text.startsWith("### ") -> text.replaceFirst("### ", getZeroWidthSpace(4))
+                    text.startsWith("#### ") -> text.replaceFirst("#### ", getZeroWidthSpace(5))
+                    text.startsWith("##### ") -> text.replaceFirst("##### ", getZeroWidthSpace(6))
+                    text.startsWith("###### ") -> text.replaceFirst("###### ", getZeroWidthSpace(7))
+                    else -> text
+                }
+            } else {
+                text
             }
-        }
-        var image: Uri? = null
-        val imageRegex = Regex("!\\[.*]\\([^!]*\\)")
-        if (text.contains(imageRegex)) {
-            val matcher = imageRegex.toPattern().matcher(text)
-            while (matcher.find()) {
-                this.replace(matcher.start(), matcher.end(), getZeroWidthSpace(matcher.end() - matcher.start()))
+        ).apply {
+            MdGrammer.values().forEach {
+                if (this.contains(it.regex)) {
+                    this.applyRegex(it, it.span)
+                }
             }
-        }
+            var image: Uri? = null
+            val imageRegex = Regex("!\\[.*]\\([^!]*\\)")
+            if (text.contains(imageRegex)) {
+                val matcher = imageRegex.toPattern().matcher(text)
+                while (matcher.find()) {
+                    this.replace(matcher.start(), matcher.end(), getZeroWidthSpace(matcher.end() - matcher.start()))
+                }
+            }
+            imageRegex.matchEntire(text)?.let {
+                this.clear()
+            }
+        }.also { tempSpanned = it }
     }
 
+    private var tempTextForImage: String? = null
+    private var tempUri: Uri? = null
     fun getImage(): Uri? {
+        tempUri?.let {
+            if (tempTextForImage == text) return it
+        }
         // Image Detection
         // TODO:: 현재 버그로 첫번째의 Regex만 탐지되고 있음.
+        tempTextForImage = text
         var image: Uri? = null
         val imageRegex = Regex("!\\[.*]\\([^!]*\\)")
         if (text.contains(imageRegex)) {
@@ -71,7 +88,7 @@ data class MdComponent(var text: String) {
                 image = Uri.parse(uriString)
             }
         }
-        return image
+        return image.also { tempUri = it }
     }
 
     private fun SpannableStringBuilder.applyRegex(mdGrammer: MdGrammer, span: Any) {

@@ -16,7 +16,9 @@ import com.penguodev.smartmd.repository.MDDatabase
 import com.penguodev.smartmd.ui.editor.toolbar.ToolbarManager
 import com.penguodev.smartmd.ui.editor.toolbar.ToolbarType
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.penguodev.smartmd.common.ComfyUtil
+import com.penguodev.smartmd.repository.PrefManager
 import kotlinx.coroutines.*
 import timber.log.Timber
 
@@ -38,33 +40,60 @@ class EditorActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_editor)
         binding.lifecycleOwner = this
         binding.clickHandler = ClickHandler()
-
         binding.mdEditor.setLifecycleOwner(this)
 
-        val documentId = intent.getLongExtra("documentId", -1)
-        if (documentId == -1L) {
-            this.documentId = null
-            binding.mdEditor.notifyDataSetChanged()
-        } else {
+        ToolbarManager(this, binding.mdEditor, binding.editorSectionToolbar).apply {
+            attachToolbar(ToolbarType.FAST)
+            pickImageFunction = ::pickImage
+        }
+
+        documentId = intent.getLongExtra("documentId", -1).let {
+            if (it != -1L) it
+            else null
+        }
+        loadData()
+    }
+
+    private fun checkTemporarySavedData() {
+        if (documentId == PrefManager.temporarySavedId && PrefManager.temporarySavedText != null && PrefManager.temporarySavedText?.length != 0) {
+            AlertDialog.Builder(this)
+                .setMessage("임시저장된 내용이 있습니다.")
+                .setPositiveButton("불러오기") { dialog, which ->
+                    binding.mdEditor.setContent(PrefManager.temporarySavedText ?: "")
+                    dialog.dismiss()
+                }
+                .setNegativeButton("취소") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+                .show()
+        }
+    }
+
+    private fun loadData() {
+        documentId?.let { documentId ->
             GlobalScope.launch(Dispatchers.Main) {
                 withContext(Dispatchers.Default) {
                     MDDatabase.instance.documentDao.getItem(documentId)
                 }.let {
                     if (it == null) {
                         this@EditorActivity.documentId = null
-                        binding.mdEditor.notifyDataSetChanged()
+                        binding.mdEditor.notifyDataSetChanged(true)
                     } else {
                         this@EditorActivity.documentId = it.id
                         binding.mdEditor.setContent(it.text)
                     }
                 }
             }
+        } ?: run {
+            binding.mdEditor.notifyDataSetChanged(true)
         }
+        checkTemporarySavedData()
+    }
 
-        ToolbarManager(this, binding.mdEditor, binding.editorSectionToolbar).apply {
-            attachToolbar(ToolbarType.FAST)
-            pickImageFunction = ::pickImage
-        }
+    override fun onPause() {
+        super.onPause()
+        PrefManager.saveTemporary(documentId, binding.mdEditor.getContent())
     }
 
     inner class ClickHandler {
@@ -90,6 +119,7 @@ class EditorActivity : AppCompatActivity() {
             }
             setResult(Activity.RESULT_OK)
             finish()
+            PrefManager.saveTemporary(null, null)
         }
     }
 
