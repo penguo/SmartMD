@@ -6,6 +6,10 @@
     <data>
 
         <variable
+            name="item"
+            type="com.penguodev.smartmd.model.ItemDocument" />
+
+        <variable
             name="clickHandler"
             type="com.penguodev.smartmd.ui.viewer.ViewerActivity.ClickHandler" />
 
@@ -43,11 +47,11 @@
                         android:gravity="end"
                         android:textColor="@color/caption"
                         android:textSize="12sp"
-                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/viewer_tv_save"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:saveTime="@{item.lastUpdateTime}" />
 
                     <TextView
                         android:id="@+id/viewer_tv_save"

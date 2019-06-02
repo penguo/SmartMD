@@ -47,6 +47,7 @@ class ViewerActivity : AppCompatActivity() {
                 item.observe(this@ViewerActivity, Observer {
                     binding.mdEditor.editable = false
                     binding.mdEditor.setContent(it.text)
+                    binding.item = it
                 })
             }
     }

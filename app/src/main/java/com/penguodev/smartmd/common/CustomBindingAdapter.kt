@@ -34,13 +34,13 @@ fun setSrcResId(view: ImageView, resId: Int?) {
     }
 }
 
-@BindingAdapter("autoSaveTime")
-fun setAutoSaveTime(view: TextView, time: Long?) {
+@BindingAdapter("saveTime")
+fun setSaveTime(view: TextView, time: Long?) {
     if (time == null) {
         view.text = ""
         return
     }
-    view.text = SimpleDateFormat("aa h:mm:ss", Locale.KOREAN).format(Date(time)) + "에 저장됨."
+    view.text = SimpleDateFormat("yyyy. M. d. aa h:mm:ss", Locale.KOREAN).format(Date(time)) + " 에 저장됨."
 }
 
 @BindingAdapter("lastUpdateTime")

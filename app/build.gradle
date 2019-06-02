@@ -9,8 +9,8 @@ android {
         applicationId "com.penguodev.smartmd"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 70100
-        versionName "0.7.1"
+        versionCode 80000
+        versionName "0.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
