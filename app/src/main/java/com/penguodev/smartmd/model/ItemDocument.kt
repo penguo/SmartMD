@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "ItemDocument")
 data class ItemDocument(
-    @PrimaryKey(autoGenerate = true) val id: Long?,
+    val id: Long?,
     var header: String?,
     var text: String,
     val createTime: Long,
