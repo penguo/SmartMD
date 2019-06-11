@@ -8,6 +8,8 @@ Repository include 'mdEditor' Library, created by me.
 
 0.8
 
+Available on the Google Play Store.
+
 ## TODO (> 0.9)
 
 문법 요소들
